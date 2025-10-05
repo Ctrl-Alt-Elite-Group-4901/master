@@ -1,4 +1,3 @@
-# arete/db.py
 import sqlite3
 
 DB_NAME = "arete.db"
