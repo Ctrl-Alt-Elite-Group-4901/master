@@ -5,9 +5,10 @@ def signup(email, password, first_name="", last_name=""):
     conn = sqlite3.connect(db.DB_NAME)
     cursor = conn.cursor()
     try:
+        hashed = security.hash_password(password)
         cursor.execute(
             "INSERT INTO users (email, password, first_name, last_name) VALUES (?, ?, ?, ?)",
-            (email, password, first_name, last_name)
+            (email, hashed, first_name, last_name)
         )
         user_id = cursor.lastrowid
         cursor.execute("INSERT INTO stats (user_id) VALUES (?)", (user_id,))
@@ -21,10 +22,15 @@ def signup(email, password, first_name="", last_name=""):
 def login(email, password):
     conn = sqlite3.connect(db.DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE email=? AND password=?", (email, password))
-    user = cursor.fetchone()
+    cursor.execute("SELECT id, password FROM users WHERE email=?", (email,))
+    row = cursor.fetchone()
     conn.close()
-    return user
+    if not row:
+        return None
+    user_id, stored_hash = row
+    if security.verify_password(password, stored_hash):
+        return (user_id,)
+    return None
 
 def get_user(user_id):
     conn = sqlite3.connect(db.DB_NAME)
