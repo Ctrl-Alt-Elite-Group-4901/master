@@ -1,5 +1,5 @@
 import sqlite3
-from arete import db
+from . import db, security
 
 def signup(email, password, first_name="", last_name=""):
     conn = sqlite3.connect(db.DB_NAME)

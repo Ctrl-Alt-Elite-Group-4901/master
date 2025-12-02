@@ -17,7 +17,7 @@ import time
 # Game constants
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
-FLOOR_HEIGHT = 60
+FLOOR_HEIGHT = 150
 PLAYER_RADIUS = 18
 GRAVITY = -1200  # pixels per second^2 (negative = pulls down)
 JUMP_VELOCITY = 520  # initial jump velocity - tuned for feel
@@ -153,16 +153,20 @@ class GameWidget(Widget):
         self.canvas.clear()
         with self.canvas:
             # draw background
-            Color(0.08, 0.09, 0.12)
-            Rectangle(pos=(0, 0), size=(WINDOW_WIDTH, WINDOW_HEIGHT))
+            Color(1, 1, 1, 1)
+            Rectangle(
+                pos=(0, 0),
+                size=(WINDOW_WIDTH, WINDOW_HEIGHT),
+                source="images/background_sea.png"
+            )
 
             # draw floor
-            Color(0.16, 0.18, 0.22)
-            Rectangle(pos=(0, 0), size=(WINDOW_WIDTH, FLOOR_HEIGHT))
+            #Color(0.16, 0.18, 0.22)
+            #Rectangle(pos=(0, 0), size=(WINDOW_WIDTH, FLOOR_HEIGHT))
 
             # draw a ground stripe for depth
-            Color(0.12, 0.13, 0.17)
-            Rectangle(pos=(0, FLOOR_HEIGHT-6), size=(WINDOW_WIDTH, 6))
+            #Color(0.12, 0.13, 0.17)
+            #Rectangle(pos=(0, FLOOR_HEIGHT-6), size=(WINDOW_WIDTH, 6))
 
         # update only if running (but still draw static HUD)
         if self.is_running and not self.game_over:

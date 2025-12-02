@@ -171,8 +171,16 @@
             on_release: app.root.current = "menu"
 
 <GameScreen>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: "background_sea.png"
+
     BoxLayout:
         orientation: "vertical"
+        padding: 40
+        spacing: 20
         Label:
             text: "Game Placeholder"
         Button:
