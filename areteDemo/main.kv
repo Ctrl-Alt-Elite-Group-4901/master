@@ -1,177 +1,349 @@
-<LoginScreen>:
+#:kivy 2.2.0
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+# ===== WIDGET TEMPLATES =====
+<Header@BoxLayout>:
+    size_hint_y: None
+    height: dp(60)
+    padding: dp(10)
+    spacing: dp(10)
+    canvas.before:
+        Color:
+            rgba: app.theme_header
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        text: "Arete App"
+        bold: True
+        font_size: "20sp"
+        color: 1, 1, 1, 1
+
+<Footer@BoxLayout>:
+    size_hint_y: None
+    height: dp(50)
+    padding: dp(10)
+    spacing: dp(10)
+    canvas.before:
+        Color:
+            rgba: app.theme_footer
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        text: "© Arete - ver 1.3"
+        font_size: "14sp"
+        color: 0.3, 0.3, 0.3, 1
+
+# ===== SCREEN DEFINITIONS =====
+<Login>:
+    name: "login"
+    canvas.before:
+        Color:
+            rgba: app.theme_background
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
         orientation: "vertical"
-        padding: 50
-        spacing: 20
+        Header:
+        BoxLayout:
+            orientation: "vertical"
+            padding: dp(20)
+            spacing: dp(10)
+            Label:
+                text: "Login"
+                font_size: "24sp"
+                color: 0, 0, 0, 1
+            TextInput:
+                id: email
+                hint_text: "Email"
+                multiline: False
+            TextInput:
+                id: password
+                hint_text: "Password"
+                password: True
+                multiline: False
+            Button:
+                text: "Login"
+                size_hint_y: None
+                height: dp(40)
+                on_release: root.login_user()
+            Button:
+                text: "Sign Up"
+                size_hint_y: None
+                height: dp(40)
+                on_release: root.go_to_signup()
+        Footer:
 
-        Label:
-            text: "Login"
-            font_size: 32
-
-        TextInput:
-            id: email
-            hint_text: "Email"
-            multiline: False
-
-        TextInput:
-            id: password
-            hint_text: "Password"
-            password: True
-            multiline: False
-
-        Label:
-            id: message
-            text: ""
-            color: 1,0,0,1
-
-        Button:
-            text: "Login"
-            on_release: root.attempt_login(email.text, password.text)
-
-        Button:
-            text: "Sign Up"
-            on_release: app.root.current = "signup"
-
-<SignupScreen>:
+<Register>:
+    name: "register"
+    canvas.before:
+        Color:
+            rgba: app.theme_background
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
         orientation: "vertical"
-        padding: 50
-        spacing: 20
+        Header:
+        BoxLayout:
+            orientation: "vertical"
+            padding: dp(20)
+            spacing: dp(10)
+            Label:
+                text: "Register"
+                font_size: "24sp"
+                color: 0, 0, 0, 1
+            TextInput:
+                id: first_name
+                hint_text: "First Name"
+                multiline: False
+            TextInput:
+                id: last_name
+                hint_text: "Last Name"
+                multiline: False
+            TextInput:
+                id: email
+                hint_text: "Email"
+                multiline: False
+            TextInput:
+                id: password
+                hint_text: "Password"
+                password: True
+                multiline: False
+            Button:
+                text: "Create Account"
+                size_hint_y: None
+                height: dp(40)
+                on_release: root.signup_user()
+            Button:
+                text: "Back to Login"
+                size_hint_y: None
+                height: dp(40)
+                on_release: root.go_to_login()
+        Footer:
 
-        Label:
-            text: "Create Account"
-            font_size: 32
-
-        TextInput:
-            id: email
-            hint_text: "Email"
-            multiline: False
-
-        TextInput:
-            id: password
-            hint_text: "Password"
-            password: True
-            multiline: False
-
-        TextInput:
-            id: first_name
-            hint_text: "First Name"
-            multiline: False
-
-        TextInput:
-            id: last_name
-            hint_text: "Last Name"
-            multiline: False
-
-        Label:
-            id: message
-            text: ""
-            color: 1,0,0,1
-
-        Button:
-            text: "Sign Up"
-            on_release: root.attempt_signup(email.text, password.text, first_name.text, last_name.text)
-
-        Button:
-            text: "Back to Login"
-            on_release: app.root.current = "login"
-
-<MenuScreen>:
+<MainMenu>:
+    name: "main_menu"
+    canvas.before:
+        Color:
+            rgba: app.theme_background
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
         orientation: "vertical"
-        padding: 40
-        spacing: 20
+        Header:
+        BoxLayout:
+            orientation: "vertical"
+            padding: dp(20)
+            spacing: dp(15)
+            Label:
+                text: "Main Menu"
+                font_size: "24sp"
+                color: 0, 0, 0, 1
+                size_hint_y: None
+                height: dp(40)
+            Button:
+                text: "Play Game"
+                size_hint_y: None
+                height: dp(50)
+                on_release: root.go_to_game()
+            Button:
+                text: "Profile"
+                size_hint_y: None
+                height: dp(50)
+                on_release: root.go_to_profile()
+            Button:
+                text: "Settings"
+                size_hint_y: None
+                height: dp(50)
+                on_release: root.manager.current = "settings"
+            Button:
+                text: "Help"
+                size_hint_y: None
+                height: dp(50)
+                on_release: root.manager.current = "help"
+            Button:
+                text: "Logout"
+                size_hint_y: None
+                height: dp(50)
+                on_release: root.logout()
+        Footer:
 
-        Label:
-            text: "Main Menu"
-            font_size: 32
-
-        Button:
-            text: "Profile"
-            on_release: app.root.current = "profile"
-        Button:
-            text: "Stats"
-            on_release: app.root.current = "stats"
-        Button:
-            text: "Info"
-            on_release: app.root.current = "info"
-        Button:
-            text: "Settings"
-            on_release: app.root.current = "settings"
-        Button:
-            text: "Game"
-            on_release: app.root.current = "game"
-        Button:
-            text: "Logout"
-            on_release: app.root.current = "login"
-
-<ProfileScreen>:
+<Profile>:
+    canvas.before:
+        Color:
+            rgba: app.theme_background
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
         orientation: "vertical"
-        padding: 40
-        spacing: 20
+        Header:
+        ScrollView:
+            BoxLayout:
+                orientation: "vertical"
+                padding: dp(20)
+                spacing: dp(10)
+                size_hint_y: None
+                height: self.minimum_height
+                
+                Label:
+                    text: "Edit Profile"
+                    font_size: "24sp"
+                    color: 0, 0, 0, 1
+                    size_hint_y: None
+                    height: dp(40)
+                
+                Label:
+                    text: "First Name"
+                    font_size: "16sp"
+                    color: 0, 0, 0, 1
+                    size_hint_y: None
+                    height: dp(30)
+                    halign: "left"
+                    text_size: self.size
+                
+                TextInput:
+                    id: first_name
+                    hint_text: "First Name"
+                    multiline: False
+                    size_hint_y: None
+                    height: dp(40)
+                
+                Label:
+                    text: "Last Name"
+                    font_size: "16sp"
+                    color: 0, 0, 0, 1
+                    size_hint_y: None
+                    height: dp(30)
+                    halign: "left"
+                    text_size: self.size
+                
+                TextInput:
+                    id: last_name
+                    hint_text: "Last Name"
+                    multiline: False
+                    size_hint_y: None
+                    height: dp(40)
+                
+                Label:
+                    text: "Email"
+                    font_size: "16sp"
+                    color: 0, 0, 0, 1
+                    size_hint_y: None
+                    height: dp(30)
+                    halign: "left"
+                    text_size: self.size
+                
+                TextInput:
+                    id: email
+                    hint_text: "Email"
+                    multiline: False
+                    size_hint_y: None
+                    height: dp(40)
+                
+                Button:
+                    text: "Save Changes"
+                    size_hint_y: None
+                    height: dp(50)
+                    background_color: 0.12, 0.45, 0.88, 1
+                    on_release: root.save_profile()
+                
+                # Score Table Section
+                Widget:
+                    size_hint_y: None
+                    height: dp(20)
+                
+                Label:
+                    text: "Leaderboard"
+                    font_size: "20sp"
+                    bold: True
+                    color: 0, 0, 0, 1
+                    size_hint_y: None
+                    height: dp(40)
+                
+                Label:
+                    id: scores_table
+                    text: "Loading scores..."
+                    font_size: "16sp"
+                    color: 0, 0, 0, 1
+                    size_hint_y: None
+                    height: dp(150)
+                    text_size: self.width, None
+                    halign: "left"
+                    valign: "top"
+                
+                Widget:
+                    size_hint_y: None
+                    height: dp(20)
+                
+                Button:
+                    text: "Go to Settings"
+                    size_hint_y: None
+                    height: dp(40)
+                    on_release: root.go_to_settings()
+                
+                Button:
+                    text: "Back to Menu"
+                    size_hint_y: None
+                    height: dp(40)
+                    on_release: root.manager.current = "main_menu"
+        Footer:
 
-        Label:
-            text: "Profile"
-            font_size: 32
-
-        Label:
-            text: "Email: " + root.user_email
-        TextInput:
-            id: first_name
-            text: root.user_first_name
-            hint_text: "First Name"
-        TextInput:
-            id: last_name
-            text: root.user_last_name
-            hint_text: "Last Name"
-
-        Button:
-            text: "Save Changes"
-            on_release: root.save_profile(first_name.text, last_name.text)
-
-        Button:
-            text: "Back"
-            on_release: app.root.current = "menu"
-
-<SettingsScreen>:
+<Settings>:
+    name: "settings"
+    canvas.before:
+        Color:
+            rgba: app.theme_background
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
         orientation: "vertical"
-        padding: 40
-        spacing: 20
-
-        Label:
-            text: "Settings"
-            font_size: 32
-
-        Button:
-            text: "Delete Account"
-            on_release: root.delete_account()
-
-        Button:
-            text: "Back"
-            on_release: app.root.current = "menu"
-
-<StatsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            text: "Stats (coming soon)"
-        Button:
-            text: "Back"
-            on_release: app.root.current = "menu"
-
-<InfoScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            text: "Info Page (coming soon)"
-        Button:
-            text: "Back"
-            on_release: app.root.current = "menu"
+        Header:
+        BoxLayout:
+            orientation: "vertical"
+            padding: dp(20)
+            spacing: dp(10)
+            Label:
+                text: "Settings"
+                font_size: "24sp"
+                color: 0, 0, 0, 1
+                size_hint_y: None
+                height: dp(40)
+            Widget:
+                size_hint_y: 0.3
+            Button:
+                text: "Toggle Light/Dark Mode"
+                size_hint_y: None
+                height: dp(50)
+                on_release: root.toggle_theme()
+            Button:
+                text: "Change Password"
+                size_hint_y: None
+                height: dp(50)
+                on_release: root.show_change_password_dialog()
+            Button:
+                text: "Delete Account"
+                size_hint_y: None
+                height: dp(50)
+                background_color: 1, 0.3, 0.3, 1
+                on_release: root.show_delete_account_dialog()
+            Widget:
+                size_hint_y: 0.3
+            Button:
+                text: "Back to Menu"
+                size_hint_y: None
+                height: dp(40)
+                on_release: root.manager.current = "main_menu"
+        Footer:
 
 <GameScreen>:
     canvas.before:
+<<<<<<< Updated upstream
         Rectangle:
             pos: self.pos
             size: self.size
@@ -186,3 +358,62 @@
         Button:
             text: "Back"
             on_release: app.root.current = "menu"
+=======
+        Color:
+            rgba: app.theme_background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        orientation: "vertical"
+        Header:
+        BoxLayout:
+            id: game_container
+            orientation: "vertical"
+            # Game widget will be added here dynamically
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(60)
+            padding: dp(10)
+            spacing: dp(10)
+            Label:
+                text: "Press SPACEBAR to jump!"
+                color: 0, 0, 0, 1
+                font_size: "16sp"
+            Button:
+                text: "Return to Menu"
+                size_hint_x: None
+                width: dp(150)
+                on_release: root.return_to_menu()
+        Footer:
+
+<HelpScreen>:
+    name: "help"
+    canvas.before:
+        Color:
+            rgba: app.theme_background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        orientation: "vertical"
+        Header:
+        BoxLayout:
+            orientation: "vertical"
+            padding: dp(20)
+            spacing: dp(10)
+            Label:
+                text: "Help / About"
+                font_size: "24sp"
+                color: 0, 0, 0, 1
+            Label:
+                text: "Arete App - Version 1.3\n\nThis is a demo application.\n\nFor support, contact support@arete.app"
+                color: 0, 0, 0, 1
+            Button:
+                text: "Back to Menu"
+                size_hint_y: None
+                height: dp(40)
+                on_release: root.manager.current = "main_menu"
+        Footer:
+>>>>>>> Stashed changes
