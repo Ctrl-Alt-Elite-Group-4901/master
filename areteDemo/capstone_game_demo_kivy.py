@@ -5,7 +5,7 @@ from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Ellipse, RoundedRectangle, PushMatrix, PopMatrix, Rotate
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
-from kivy.properties import NumericProperty, BooleanProperty, ListProperty
+from kivy.properties import NumericProperty, BooleanProperty, ListProperty, ObjectProperty
 import random
 import time
 
@@ -54,10 +54,12 @@ class GameWidget(Widget):
     score_distance = NumericProperty(0.0)
     avoided_count = NumericProperty(0)
     game_over = BooleanProperty(False)
+    on_game_over_callback = ObjectProperty(None, allownone=True)
 
-    def __init__(self, **kwargs):
+    def __init__(self, embedded=False, **kwargs):
         super().__init__(**kwargs)
-        Window.size = (WINDOW_WIDTH, WINDOW_HEIGHT)
+        if not embedded:
+            Window.size = (WINDOW_WIDTH, WINDOW_HEIGHT)
         Window.bind(on_key_down=self._on_key_down)
         self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
         self._last_spawn_x = WINDOW_WIDTH + 100
@@ -66,34 +68,39 @@ class GameWidget(Widget):
         self._slow_until = None
         self._slow_start_speed = None
 
-        # UI labels
-        self.label_countdown = Label(text="", font_size=48, pos=(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/2 - 24))
+        # UI labels (bold colors so they show on sea background)
+        self.label_countdown = Label(
+            text="", font_size=56, pos=(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/2 - 28),
+            color=(0, 0, 0, 1), bold=True
+        )
         self.add_widget(self.label_countdown)
-        self.hud = Label(text="", font_size=18, pos=(10, WINDOW_HEIGHT - 30))
+        self.hud = Label(
+            text="", font_size=22, pos=(10, WINDOW_HEIGHT - 36),
+            color=(0, 0, 0, 1), bold=True
+        )
         self.add_widget(self.hud)
-        self.msg = Label(text="Press SPACE to start", font_size=22, pos=(WINDOW_WIDTH/2 - 140, WINDOW_HEIGHT/2 + 40))
+        self.msg = Label(
+            text="Press SPACE or ENTER to start", font_size=26, pos=(WINDOW_WIDTH/2 - 200, WINDOW_HEIGHT/2 + 30),
+            color=(0, 0, 0, 1), bold=True
+        )
         self.add_widget(self.msg)
 
         # schedule update
         Clock.schedule_interval(self.update, 1.0/60.0)
-
-        with self.canvas:
-            pass  # we'll draw each frame in update()
+        # Game graphics drawn to canvas.before so Labels (children) render on top
 
     def _on_key_down(self, window, key, scancode, codepoint, modifiers):
-        # space key -> 32
-        if key == 32:
-            if not self.is_running and not self.is_counting_down and not self.game_over:
-                # start countdown
-                self.msg.text = ""
-                self.start_countdown(3)
-            elif self.is_running and not self.game_over:
-                # player jump input
-                if self.on_ground():
-                    self.player_vy = JUMP_VELOCITY
-            elif self.game_over:
-                # restart the game
-                self.reset_game()
+        # SPACE = 32, Enter/Return = 13 (both start countdown and restart; only SPACE jumps)
+        if key not in (32, 13):
+            return
+        if not self.is_running and not self.is_counting_down and not self.game_over:
+            self.msg.text = ""
+            self.start_countdown(3)
+        elif self.is_running and not self.game_over:
+            if key == 32 and self.on_ground():
+                self.player_vy = JUMP_VELOCITY
+        elif self.game_over:
+            self.reset_game()
 
     def start_countdown(self, seconds):
         self.countdown_value = seconds
@@ -127,7 +134,7 @@ class GameWidget(Widget):
         self.is_running = False
         self.is_counting_down = False
         self.game_over = False
-        self.msg.text = "Press SPACE to start"
+        self.msg.text = "Press SPACE or ENTER to start"
         self.label_countdown.text = ""
         self.hud.text = ""
         self._slow_until = None
@@ -149,9 +156,9 @@ class GameWidget(Widget):
         if dt <= 0:
             return
 
-        # draw fresh
-        self.canvas.clear()
-        with self.canvas:
+        # draw fresh to canvas.before so Labels stay visible on top
+        self.canvas.before.clear()
+        with self.canvas.before:
             # draw background
             Color(1, 1, 1, 1)
             Rectangle(
@@ -159,14 +166,6 @@ class GameWidget(Widget):
                 size=(WINDOW_WIDTH, WINDOW_HEIGHT),
                 source="images/background_sea.png"
             )
-
-            # draw floor
-            #Color(0.16, 0.18, 0.22)
-            #Rectangle(pos=(0, 0), size=(WINDOW_WIDTH, FLOOR_HEIGHT))
-
-            # draw a ground stripe for depth
-            #Color(0.12, 0.13, 0.17)
-            #Rectangle(pos=(0, FLOOR_HEIGHT-6), size=(WINDOW_WIDTH, 6))
 
         # update only if running (but still draw static HUD)
         if self.is_running and not self.game_over:
@@ -258,7 +257,7 @@ class GameWidget(Widget):
                         pass
 
         # draw dynamic objects regardless of running (so countdown/score display)
-        with self.canvas:
+        with self.canvas.before:
             # draw obstacles
             for ob in self.obstacles:
                 Color(0.86, 0.26, 0.2)
@@ -287,17 +286,20 @@ class GameWidget(Widget):
             small = self.player_radius * 0.5
             Ellipse(pos=(self.player_x - small/2, self.player_y - small/2), size=(small, small))
 
-        # draw HUD text
+        # draw HUD text (keep showing during game over so final stats are visible)
         if not self.game_over:
             self.hud.text = f"Health: {self.health}    Distance: {int(self.score_distance)}    Avoided: {self.avoided_count}"
         else:
-            self.hud.text = ""
+            final_score = int(self.score_distance) + self.avoided_count * 100
+            self.hud.text = f"FINAL — Health: 0    Score: {final_score}"
 
     def end_game(self):
         self.is_running = False
         self.game_over = True
         final_score = int(self.score_distance) + self.avoided_count * 100
-        self.msg.text = f"Game Over — Score: {final_score}\nPress SPACE to restart"
+        self.msg.text = f"Game Over — Score: {final_score}\nPress SPACE or ENTER to play again"
+        if self.on_game_over_callback:
+            self.on_game_over_callback()
 
 class CapstoneGameDemoApp(App):
     def build(self):

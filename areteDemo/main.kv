@@ -171,18 +171,90 @@
             on_release: app.root.current = "menu"
 
 <GameScreen>:
-    canvas.before:
-        Rectangle:
-            pos: self.pos
-            size: self.size
-            source: "background_sea.png"
-
-    BoxLayout:
-        orientation: "vertical"
-        padding: 40
-        spacing: 20
-        Label:
-            text: "Game Placeholder"
+    FloatLayout:
+        id: game_container
         Button:
+            size_hint: None, None
+            size: 100, 50
+            pos_hint: {"x": 0, "top": 1}
             text: "Back"
             on_release: app.root.current = "menu"
+
+<ReflectionScreen>:
+    # Neutral screen (no game imagery) for memory/recognition questions
+    BoxLayout:
+        orientation: "vertical"
+        padding: 60
+        spacing: 24
+
+        Label:
+            text: "Quick reflection"
+            font_size: 28
+            size_hint_y: None
+            height: 40
+
+        BoxLayout:
+            id: quiz_box
+            orientation: "vertical"
+            spacing: 16
+            opacity: 1
+            disabled: False
+
+            Label:
+                id: progress_label
+                text: "Question 1 of 5"
+                font_size: 16
+                size_hint_y: None
+                height: 28
+
+            Label:
+                id: question_label
+                text: ""
+                font_size: 22
+                text_size: self.size
+                halign: "center"
+                valign: "middle"
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: 10
+                size_hint_y: None
+                height: 200
+                Button:
+                    id: choice_0
+                    text: ""
+                    on_release: root.on_choice(0)
+                Button:
+                    id: choice_1
+                    text: ""
+                    on_release: root.on_choice(1)
+                Button:
+                    id: choice_2
+                    text: ""
+                    on_release: root.on_choice(2)
+                Button:
+                    id: choice_3
+                    text: ""
+                    on_release: root.on_choice(3)
+
+        BoxLayout:
+            id: done_box
+            orientation: "vertical"
+            spacing: 20
+            opacity: 0
+            disabled: True
+
+            Label:
+                id: done_label
+                text: "Thanks!"
+                font_size: 20
+                text_size: self.size
+                halign: "center"
+                valign: "middle"
+
+            Button:
+                id: done_back_btn
+                text: "Back to game"
+                size_hint_y: None
+                height: 50
+                on_release: root.go_back()
