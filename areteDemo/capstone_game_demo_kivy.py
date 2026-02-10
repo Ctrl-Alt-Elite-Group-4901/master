@@ -29,6 +29,8 @@ SPEED_INCREASE_PER_5_AVOIDED = 10  # speed increases incrementally for every 5 o
 OBSTACLE_MIN_GAP = 350
 OBSTACLE_MAX_GAP = 900
 SPAWN_INTERVAL_BASE = 1.6  # base interval between obstacles (sec) - modified by speed
+SPEED_INCREASE_PER_SEC = 0
+SLOW_RECOVER_TIME = 1.6
 
 SLOW_ON_HIT_MULTIPLIER = 0.9  # speed multiplier upon hit
 GAME_DURATION = 300  # 5 minute game duration
@@ -79,6 +81,22 @@ class GameWidget(Widget):
         self._spawn_accumulator = 0.0
         self._time = time.time()
         self._slow_start_speed = None
+        self._slow_until = None
+
+        self._last_speed_milestone = 0
+
+        # backgrounds
+        self.backgrounds = [
+            "images/background_sea.png",
+            "images/background_forest.png",
+            "images/background_space.png"
+        ]
+        self.bg_index = 0
+        self.bg_source = self.backgrounds[self.bg_index]
+
+        # background switch timer
+        self._bg_elapsed = 0.0
+        self.BG_SWITCH_SECONDS = 10.0
 
         # UI labels (bold colors so they show on sea background)
         self.label_countdown = Label(
@@ -156,6 +174,13 @@ class GameWidget(Widget):
         self.label_countdown.text = ""
         self.hud.text = ""
         self._slow_start_speed = None
+        
+        self._last_speed_milestone = 0
+        self.bg_index = 0
+        self.bg_source = self.backgrounds[self.bg_index]
+        self._bg_elapsed = 0.0
+        self._slow_until = None
+
 
     def on_ground(self):
         # player's center y equals ground + radius
@@ -181,42 +206,8 @@ class GameWidget(Widget):
             Rectangle(
                 pos=(0, 0),
                 size=(WINDOW_WIDTH, WINDOW_HEIGHT),
-                source="images/background_sea.png"
+                source=self.bg_source
             )
-
-            # Substitute in images when you are ready!
-            elapsed_time = time.time() - self._time
-            if (elapsed_time >= 60):
-                Color(1, 1, 1, 1)
-                Rectangle(
-                    pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
-                )
-
-            if (elapsed_time >= 120):
-                Color(1, 1, 1, 1)
-                Rectangle(
-                    pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
-                )
-
-            if (elapsed_time >= 180):
-                Color(1, 1, 1, 1)
-                Rectangle(
-                    pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
-                )
-
-            if (elapsed_time >= 240):
-                Color(1, 1, 1, 1)
-                Rectangle(
-                    pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
-                )
 
         # update only if running (but still draw static HUD)
         if self.is_running and not self.game_over:
@@ -224,8 +215,32 @@ class GameWidget(Widget):
             elapsed_time = time.time() - self._time
             if elapsed_time >= GAME_DURATION:
                 self.end_game()
-                return
-            
+                return           
+
+            # background change every 10 seconds
+            self._bg_elapsed += dt
+            if self._bg_elapsed >= self.BG_SWITCH_SECONDS:
+                self._bg_elapsed = 0.0
+                self.bg_index = (self.bg_index + 1) % len(self.backgrounds)
+                self.bg_source = self.backgrounds[self.bg_index]
+
+            # speed increases gradually
+            self.base_speed += SPEED_INCREASE_PER_SEC * dt
+            # handle slow effect interpolation if in slow recovery
+            if self._slow_until is not None:
+                now = time.time()
+                if now >= self._slow_until:
+                    # end slow effect
+                    self.speed = self.base_speed
+                    self._slow_until = None
+                    self._slow_start_speed = None
+                else:
+                    # smooth interpolate speed back to base_speed
+                    t = 1.0 - (self._slow_until - now) / SLOW_RECOVER_TIME  # 0->1
+                    self.speed = (1.0 - t) * self._slow_start_speed + t * self.base_speed
+            else:
+                self.speed = self.base_speed
+
             # move obstacles left by speed*dt
             for ob in list(self.obstacles):
                 ob.x -= self.speed * dt
