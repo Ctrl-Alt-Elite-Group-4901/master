@@ -196,7 +196,7 @@ class GameWidget(Widget):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
                     source="images/background_sea.png"
                 )
 
@@ -204,7 +204,7 @@ class GameWidget(Widget):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
                     source="images/background_sea.png"
                 )
 
@@ -212,7 +212,7 @@ class GameWidget(Widget):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
                     source="images/background_sea.png"
                 )
 
@@ -220,7 +220,7 @@ class GameWidget(Widget):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
                     source="images/background_sea.png"
                 )
 
