@@ -29,8 +29,6 @@ SPEED_INCREASE_PER_5_AVOIDED = 10  # speed increases incrementally for every 5 o
 OBSTACLE_MIN_GAP = 350
 OBSTACLE_MAX_GAP = 900
 SPAWN_INTERVAL_BASE = 1.6  # base interval between obstacles (sec) - modified by speed
-SPEED_INCREASE_PER_SEC = 0
-SLOW_RECOVER_TIME = 1.6
 
 SLOW_ON_HIT_MULTIPLIER = 0.9  # speed multiplier upon hit
 GAME_DURATION = 300  # 5 minute game duration
@@ -118,6 +116,19 @@ class GameWidget(Widget):
         # schedule update
         Clock.schedule_interval(self.update, 1.0/60.0)
         # Game graphics drawn to canvas.before so Labels (children) render on top
+
+        # Window resize handler to adjust player and UI positions (not fully implemented)
+        #def _on_resize(self, *_):
+        #    self.player_x = self.width * 0.15
+        #    self.player_y = self.floor_height + PLAYER_RADIUS
+        #
+        #    self.label_countdown.center = self.center
+        #    self.msg.center = (self.width / 2, self.height * 0.6)
+        #    self.hud.pos = (10, self.height - 36)
+        #
+        #@property
+        #def floor_height(self):
+        #    return self.height * BASE_FLOOR_RATIO
 
     # [NEW] Helper method to set color (Merged from our work)
     def set_player_color(self, r, g, b, a=1):
@@ -224,23 +235,12 @@ class GameWidget(Widget):
                 self.bg_index = (self.bg_index + 1) % len(self.backgrounds)
                 self.bg_source = self.backgrounds[self.bg_index]
 
-            # speed increases gradually
-            self.base_speed += SPEED_INCREASE_PER_SEC * dt
-            # handle slow effect interpolation if in slow recovery
-            if self._slow_until is not None:
-                now = time.time()
-                if now >= self._slow_until:
-                    # end slow effect
-                    self.speed = self.base_speed
-                    self._slow_until = None
-                    self._slow_start_speed = None
-                else:
-                    # smooth interpolate speed back to base_speed
-                    t = 1.0 - (self._slow_until - now) / SLOW_RECOVER_TIME  # 0->1
-                    self.speed = (1.0 - t) * self._slow_start_speed + t * self.base_speed
-            else:
-                self.speed = self.base_speed
-
+            # game end condition
+            elapsed_time = time.time() - self._time
+            if elapsed_time >= GAME_DURATION:
+                self.end_game()
+                return
+            
             # move obstacles left by speed*dt
             for ob in list(self.obstacles):
                 ob.x -= self.speed * dt
