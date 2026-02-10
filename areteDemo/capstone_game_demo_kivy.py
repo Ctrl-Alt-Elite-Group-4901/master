@@ -190,6 +190,40 @@ class GameWidget(Widget):
                 source="images/background_sea.png"
             )
 
+            # Substitute in images when you are ready!
+            elapsed_time = time.time() - self._time
+            if (elapsed_time >= 60):
+                Color(1, 1, 1, 1)
+                Rectangle(
+                    pos=(0, 0),
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
+                )
+
+            if (elapsed_time >= 120):
+                Color(1, 1, 1, 1)
+                Rectangle(
+                    pos=(0, 0),
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
+                )
+
+            if (elapsed_time >= 180):
+                Color(1, 1, 1, 1)
+                Rectangle(
+                    pos=(0, 0),
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
+                )
+
+            if (elapsed_time >= 240):
+                Color(1, 1, 1, 1)
+                Rectangle(
+                    pos=(0, 0),
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
+                )
+
         # update only if running (but still draw static HUD)
         if self.is_running and not self.game_over:
             # game end condition
