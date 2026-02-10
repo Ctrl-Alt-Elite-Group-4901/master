@@ -197,7 +197,7 @@ class GameWidget(Widget):
                 Rectangle(
                     pos=(0, 0),
                     size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
+                    source="images/background_sea.png"
                 )
 
             if (elapsed_time >= 120):
@@ -205,7 +205,7 @@ class GameWidget(Widget):
                 Rectangle(
                     pos=(0, 0),
                     size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
+                    source="images/background_sea.png"
                 )
 
             if (elapsed_time >= 180):
@@ -213,7 +213,7 @@ class GameWidget(Widget):
                 Rectangle(
                     pos=(0, 0),
                     size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
+                    source="images/background_sea.png"
                 )
 
             if (elapsed_time >= 240):
@@ -221,7 +221,7 @@ class GameWidget(Widget):
                 Rectangle(
                     pos=(0, 0),
                     size=(WINDOW_WIDTH, WINDOW_HEIGHT)
-                    #source="images/background.png"
+                    source="images/background_sea.png"
                 )
 
         # update only if running (but still draw static HUD)
