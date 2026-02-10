@@ -8,8 +8,6 @@ from capstone_game_demo_kivy import GameWidget
 
 db.init_db()
 
-# Reflection quiz: 5 multiple-choice questions 
-# correct = index of correct choice (0=A, 1=B, 2=C, 3=D)
 REFLECTION_QUESTIONS = [
     {"text": "What color best describes the ground you jumped on?", "choices": ["Grey", "Blue", "Red", "Brown"], "correct": 3},
     {"text": "How many clusters of seaweed were in the background?", "choices": ["2", "3", "1", "4"], "correct": 1},
@@ -18,7 +16,6 @@ REFLECTION_QUESTIONS = [
     {"text": "How many sea rocks were in the background?", "choices": ["1", "2", "3", "4"], "correct": 1},
 ]
 
-# Load KV files
 Builder.load_file("main.kv")
 
 class LoginScreen(Screen):
@@ -71,10 +68,23 @@ class GameScreen(Screen):
         # Resize window for game and add game widget once
         Window.size = (1920, 1080)
         container = self.ids.game_container
+        
+        # 1. Create GameWidget if it doesn't exist
         if len(container.children) == 1:  # only the Back button
             gw = GameWidget(embedded=True, size_hint=(1, 1))
             gw.on_game_over_callback = self._go_to_reflection
             container.add_widget(gw, index=0)
+
+        # 2. [Restore] Apply player color from App to GameWidget
+        app = App.get_running_app()
+        for child in container.children:
+            if isinstance(child, GameWidget):
+                # Check for method first (best practice)
+                if hasattr(child, 'set_player_color'):
+                     child.set_player_color(*app.player_color)
+                # Fallback to direct property
+                elif hasattr(child, 'player_color'):
+                    child.player_color = app.player_color
 
     def _go_to_reflection(self):
         sm = self.manager
@@ -84,15 +94,14 @@ class GameScreen(Screen):
         sm.current = "reflection"
 
     def on_leave(self):
-        # Pause game when leaving the screen
         container = self.ids.game_container
         if len(container.children) >= 2:
-            container.children[0].is_running = False  # GameWidget is at index 0
-
+             for child in container.children:
+                if isinstance(child, GameWidget):
+                    child.is_running = False
 
 class ReflectionScreen(Screen):
-    #Dedicated screen for pysch questions (5 currently)
-    return_to = StringProperty("menu")  # "game" or "menu" after quiz
+    return_to = StringProperty("menu")
     question_index = NumericProperty(0)
     answers = ListProperty([])
 
@@ -132,6 +141,9 @@ class ReflectionScreen(Screen):
         self.manager.current = self.return_to
 
 class AreteApp(App):
+    # [Restore] Player color variable
+    player_color = ListProperty([1, 1, 1, 1]) 
+
     def build(self):
         sm = ScreenManager()
         sm.add_widget(LoginScreen(name="login"))

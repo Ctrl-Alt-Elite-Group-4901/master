@@ -117,17 +117,61 @@
 
         Label:
             text: "Email: " + root.user_email
+            size_hint_y: None
+            height: 30
+
         TextInput:
             id: first_name
             text: root.user_first_name
             hint_text: "First Name"
+            multiline: False
+
         TextInput:
             id: last_name
             text: root.user_last_name
             hint_text: "Last Name"
+            multiline: False
+
+        # [Restore] Color selection buttons
+        Label:
+            text: "Choose Character Color:"
+            font_size: 20
+            size_hint_y: None
+            height: 40
+            color: 0.8, 0.8, 0.8, 1
+
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            spacing: 20
+            
+            Button:
+                text: "White"
+                background_normal: ''
+                background_color: 0.9, 0.9, 0.9, 1
+                color: 0, 0, 0, 1
+                on_release: app.player_color = [1, 1, 1, 1]
+            
+            Button:
+                text: "Red"
+                background_normal: ''
+                background_color: 1, 0.3, 0.3, 1
+                on_release: app.player_color = [1, 0.3, 0.3, 1]
+
+            Button:
+                text: "Blue"
+                background_normal: ''
+                background_color: 0.3, 0.5, 1, 1
+                on_release: app.player_color = [0.3, 0.5, 1, 1]
+
+            Button:
+                text: "Green"
+                background_normal: ''
+                background_color: 0.3, 1, 0.3, 1
+                on_release: app.player_color = [0.3, 1, 0.3, 1]
 
         Button:
-            text: "Save Changes"
+            text: "Save Name Changes"
             on_release: root.save_profile(first_name.text, last_name.text)
 
         Button:

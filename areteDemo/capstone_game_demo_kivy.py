@@ -1,4 +1,3 @@
-# capstone_game_demo_kivy.py
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -72,6 +71,10 @@ class GameWidget(Widget):
         #Window.bind(on_resize=self._on_resize)
         
         self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
+        
+        # [NEW] Player color property (Merged from our work)
+        self.player_color = [1, 1, 1, 1]
+
         self._last_spawn_x = WINDOW_WIDTH + 100
         self._spawn_accumulator = 0.0
         self._time = time.time()
@@ -98,18 +101,9 @@ class GameWidget(Widget):
         Clock.schedule_interval(self.update, 1.0/60.0)
         # Game graphics drawn to canvas.before so Labels (children) render on top
 
-    # Window resize handler to adjust player and UI positions (not fully implemented)
-    #def _on_resize(self, *_):
-    #    self.player_x = self.width * 0.15
-    #    self.player_y = self.floor_height + PLAYER_RADIUS
-    #
-    #    self.label_countdown.center = self.center
-    #    self.msg.center = (self.width / 2, self.height * 0.6)
-    #    self.hud.pos = (10, self.height - 36)
-    #
-    #@property
-    #def floor_height(self):
-    #    return self.height * BASE_FLOOR_RATIO
+    # [NEW] Helper method to set color (Merged from our work)
+    def set_player_color(self, r, g, b, a=1):
+        self.player_color = [r, g, b, a]
     
     def _on_key_down(self, window, key, scancode, codepoint, modifiers):
         # SPACE = 32, Enter/Return = 13 (both start countdown and restart; only SPACE jumps)
@@ -196,32 +190,32 @@ class GameWidget(Widget):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
-                    source="images/background_sea.png"
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
                 )
 
             if (elapsed_time >= 120):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
-                    source="images/background_sea.png"
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
                 )
 
             if (elapsed_time >= 180):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
-                    source="images/background_sea.png"
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
                 )
 
             if (elapsed_time >= 240):
                 Color(1, 1, 1, 1)
                 Rectangle(
                     pos=(0, 0),
-                    size=(WINDOW_WIDTH, WINDOW_HEIGHT),
-                    source="images/background_sea.png"
+                    size=(WINDOW_WIDTH, WINDOW_HEIGHT)
+                    #source="images/background.png"
                 )
 
         # update only if running (but still draw static HUD)
@@ -324,6 +318,10 @@ class GameWidget(Widget):
             self._last_clock_time = Clock.get_time()
             r.angle = self._roll_angle
             r.origin = (self.player_x, self.player_y)
+            
+            # [NEW] Apply dynamic player color (Merged from our work)
+            Color(*self.player_color)
+            
             Ellipse(pos=(self.player_x - self.player_radius, self.player_y - self.player_radius),
                     size=(self.player_radius*2, self.player_radius*2))
             PopMatrix()
