@@ -10,24 +10,29 @@ import random
 import time
 
 # KNOWN ISSUES/CHANGES
-# HUD Display not showing up, though the values seem to be updating accordingly
-# Window scaling is currently static, need to add scaling
-# Added player rotation to simulate movement, needs a better player model
+# HUD Display not showing up, specifically during gameplay, though the values seem to be updating accordingly
+# Window scaling has been partially added
+# Removed health system, replacing it with a timer that ends the game after 5 minutes
 
 # Game constants
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
 FLOOR_HEIGHT = 150
+
+# BASE_FLOOR_RATIO = 0.15
+
 PLAYER_RADIUS = 18
 GRAVITY = -1200  # pixels per second^2 (negative = pulls down)
 JUMP_VELOCITY = 520  # initial jump velocity - tuned for feel
+
 INITIAL_SPEED = 240  # pixels/second (how fast obstacles move left)
-SPEED_INCREASE_PER_SEC = 6  # speed increases over time
+SPEED_INCREASE_PER_5_AVOIDED = 10  # speed increases incrementally for every 5 obstacles avoided
 OBSTACLE_MIN_GAP = 350
 OBSTACLE_MAX_GAP = 900
 SPAWN_INTERVAL_BASE = 1.6  # base interval between obstacles (sec) - modified by speed
-SLOW_ON_HIT_MULTIPLIER = 0.45  # speed multiplier upon hit
-SLOW_RECOVER_TIME = 1.6  # seconds to recover from slow to normal (smooth interpolate)
+
+SLOW_ON_HIT_MULTIPLIER = 0.9  # speed multiplier upon hit
+GAME_DURATION = 300  # 5 minute game duration
 
 
 class Obstacle:
@@ -42,17 +47,20 @@ class Obstacle:
 class GameWidget(Widget):
     speed = NumericProperty(INITIAL_SPEED)  # current world speed (px/s)
     base_speed = NumericProperty(INITIAL_SPEED)  # base target speed
+    
     player_y = NumericProperty(0.0)  # center y of player
     player_vy = NumericProperty(0.0)
     player_x = NumericProperty(160.0)  # horizontal position of player (constant)
     player_radius = NumericProperty(PLAYER_RADIUS)
+    
     is_running = BooleanProperty(False)
     is_counting_down = BooleanProperty(False)
     countdown_value = NumericProperty(0)
-    health = NumericProperty(3)
+    
     obstacles = ListProperty([])
     score_distance = NumericProperty(0.0)
     avoided_count = NumericProperty(0)
+    
     game_over = BooleanProperty(False)
     on_game_over_callback = ObjectProperty(None, allownone=True)
 
@@ -61,11 +69,12 @@ class GameWidget(Widget):
         if not embedded:
             Window.size = (WINDOW_WIDTH, WINDOW_HEIGHT)
         Window.bind(on_key_down=self._on_key_down)
+        #Window.bind(on_resize=self._on_resize)
+        
         self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
         self._last_spawn_x = WINDOW_WIDTH + 100
         self._spawn_accumulator = 0.0
         self._time = time.time()
-        self._slow_until = None
         self._slow_start_speed = None
 
         # UI labels (bold colors so they show on sea background)
@@ -89,6 +98,19 @@ class GameWidget(Widget):
         Clock.schedule_interval(self.update, 1.0/60.0)
         # Game graphics drawn to canvas.before so Labels (children) render on top
 
+    # Window resize handler to adjust player and UI positions (not fully implemented)
+    #def _on_resize(self, *_):
+    #    self.player_x = self.width * 0.15
+    #    self.player_y = self.floor_height + PLAYER_RADIUS
+    #
+    #    self.label_countdown.center = self.center
+    #    self.msg.center = (self.width / 2, self.height * 0.6)
+    #    self.hud.pos = (10, self.height - 36)
+    #
+    #@property
+    #def floor_height(self):
+    #    return self.height * BASE_FLOOR_RATIO
+    
     def _on_key_down(self, window, key, scancode, codepoint, modifiers):
         # SPACE = 32, Enter/Return = 13 (both start countdown and restart; only SPACE jumps)
         if key not in (32, 13):
@@ -126,18 +148,19 @@ class GameWidget(Widget):
         self.base_speed = INITIAL_SPEED
         self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
         self.player_vy = 0.0
-        self.health = 3
+        
         self.obstacles = []
         self._spawn_accumulator = 0.0
+        
         self.score_distance = 0.0
         self.avoided_count = 0
         self.is_running = False
         self.is_counting_down = False
         self.game_over = False
+        
         self.msg.text = "Press SPACE or ENTER to start"
         self.label_countdown.text = ""
         self.hud.text = ""
-        self._slow_until = None
         self._slow_start_speed = None
 
     def on_ground(self):
@@ -169,23 +192,12 @@ class GameWidget(Widget):
 
         # update only if running (but still draw static HUD)
         if self.is_running and not self.game_over:
-            # speed increases gradually
-            self.base_speed += SPEED_INCREASE_PER_SEC * dt
-            # handle slow effect interpolation if in slow recovery
-            if self._slow_until is not None:
-                now = time.time()
-                if now >= self._slow_until:
-                    # end slow effect
-                    self.speed = self.base_speed
-                    self._slow_until = None
-                    self._slow_start_speed = None
-                else:
-                    # smooth interpolate speed back to base_speed
-                    t = 1.0 - (self._slow_until - now) / SLOW_RECOVER_TIME  # 0->1
-                    self.speed = (1.0 - t) * self._slow_start_speed + t * self.base_speed
-            else:
-                self.speed = self.base_speed
-
+            # game end condition
+            elapsed_time = time.time() - self._time
+            if elapsed_time >= GAME_DURATION:
+                self.end_game()
+                return
+            
             # move obstacles left by speed*dt
             for ob in list(self.obstacles):
                 ob.x -= self.speed * dt
@@ -193,7 +205,7 @@ class GameWidget(Widget):
             # spawn logic: spawn when last obstacle sufficiently left
             # simpler: use accumulator and a spawn interval scaled by speed
             # faster speed = shorter intervals
-            spawn_interval = max(0.4, SPAWN_INTERVAL_BASE * (INITIAL_SPEED / (self.base_speed)))
+            spawn_interval = max(0.4, SPAWN_INTERVAL_BASE)
             self._spawn_accumulator += dt
             if self._spawn_accumulator >= spawn_interval:
                 self._spawn_accumulator = 0.0
@@ -206,6 +218,10 @@ class GameWidget(Widget):
             if self.player_y < FLOOR_HEIGHT + PLAYER_RADIUS:
                 self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
                 self.player_vy = 0.0
+
+            # speed increase logic: every 5 avoided, increase base speed by fixed amount
+            if self.avoided_count > 0 and (self.avoided_count % 5 == 0):
+                self.base_speed = self.base_speed + SPEED_INCREASE_PER_5_AVOIDED
 
             # distance traveled (approx): speed * elapsed_time increments distance
             self.score_distance += self.speed * dt
@@ -233,17 +249,14 @@ class GameWidget(Widget):
                         self.obstacles.remove(ob)
                     except ValueError:
                         pass
-                    self.health -= 1
                     # slow effect
                     self._slow_start_speed = self.speed
-                    self._slow_until = time.time() + SLOW_RECOVER_TIME
                     self.base_speed = self.base_speed  # base remains but we'll interpolate from _slow_start_speed up to base
                     # immediately set current speed lower to show impact
                     self.speed = self._slow_start_speed * SLOW_ON_HIT_MULTIPLIER
                     self._slow_start_speed = self.speed
-                    # if health reaches 0 -> game over
-                    if self.health <= 0:
-                        self.end_game()
+                    if self.speed < 200:  # don't let it get too slow
+                        self.speed = 200
                     break  # only one hit per frame
 
             # obstacles that passed left edge without collision -> avoided
@@ -288,10 +301,10 @@ class GameWidget(Widget):
 
         # draw HUD text (keep showing during game over so final stats are visible)
         if not self.game_over:
-            self.hud.text = f"Health: {self.health}    Distance: {int(self.score_distance)}    Avoided: {self.avoided_count}"
+            self.hud.text = f"Distance: {int(self.score_distance)}    Avoided: {self.avoided_count}"
         else:
             final_score = int(self.score_distance) + self.avoided_count * 100
-            self.hud.text = f"FINAL — Health: 0    Score: {final_score}"
+            self.hud.text = f"FINAL — Score: {final_score}"
 
     def end_game(self):
         self.is_running = False
