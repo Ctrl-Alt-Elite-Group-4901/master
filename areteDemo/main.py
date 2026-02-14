@@ -8,12 +8,15 @@ from capstone_game_demo_kivy import GameWidget
 
 db.init_db()
 
-REFLECTION_QUESTIONS = [
-    {"text": "What color best describes the ground you jumped on?", "choices": ["Grey", "Blue", "Red", "Brown"], "correct": 3},
-    {"text": "How many clusters of seaweed were in the background?", "choices": ["2", "3", "1", "4"], "correct": 1},
-    {"text": "What color was the seashell?", "choices": ["Blue", "Red", "Purple", "Green"], "correct": 2},
-    {"text": "Which of the following appeared in the background?", "choices": ["orange fish", "red fish", "green fish", "white fish"], "correct": 0},
+REFLECTION_QUESTIONS = [ 
+    {"text": "How many clusters off purple seaweed were in the background?", "choices": ["2", "3", "1", "4"], "correct": 3},
+    {"text": "What color was the seashell in the sea background?", "choices": ["Blue", "Red", "Purple", "Green"], "correct": 2},
     {"text": "How many sea rocks were in the background?", "choices": ["1", "2", "3", "4"], "correct": 1},
+    {"text": "How many red flowers were in the forest background?", "choices": ["2", "3", "1", "4"], "correct": 1},
+    {"text": "What color was the other flower in the forest background?", "choices": ["Blue", "Red", "Purple", "Green"], "correct": 0},
+    {"text": "In the space background how many planets were there?", "choices": ["1", "2", "3", "4"], "correct": 1},
+    {"text": "What color was the spaceship in the space background?", "choices": ["Blue", "Red", "White", "Green"], "correct": 2},
+
 ]
 
 Builder.load_file("main.kv")
