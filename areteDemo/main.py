@@ -17,7 +17,7 @@ from areteDemo.screens.settings import Settings
 from areteDemo.screens.game import GameScreen
 from areteDemo.screens.help import HelpScreen
 
-`class AreteApp(App):
+class AreteApp(App):
     title = "Arete App"
     user_id = None 
     theme_header = ListProperty([0.12, 0.45, 0.88, 1])

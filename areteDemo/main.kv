@@ -343,7 +343,6 @@
 
 <GameScreen>:
     canvas.before:
-<<<<<<< Updated upstream
         Rectangle:
             pos: self.pos
             size: self.size
@@ -358,62 +357,3 @@
         Button:
             text: "Back"
             on_release: app.root.current = "menu"
-=======
-        Color:
-            rgba: app.theme_background
-        Rectangle:
-            pos: self.pos
-            size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
-        BoxLayout:
-            id: game_container
-            orientation: "vertical"
-            # Game widget will be added here dynamically
-        BoxLayout:
-            orientation: "horizontal"
-            size_hint_y: None
-            height: dp(60)
-            padding: dp(10)
-            spacing: dp(10)
-            Label:
-                text: "Press SPACEBAR to jump!"
-                color: 0, 0, 0, 1
-                font_size: "16sp"
-            Button:
-                text: "Return to Menu"
-                size_hint_x: None
-                width: dp(150)
-                on_release: root.return_to_menu()
-        Footer:
-
-<HelpScreen>:
-    name: "help"
-    canvas.before:
-        Color:
-            rgba: app.theme_background
-        Rectangle:
-            pos: self.pos
-            size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
-        BoxLayout:
-            orientation: "vertical"
-            padding: dp(20)
-            spacing: dp(10)
-            Label:
-                text: "Help / About"
-                font_size: "24sp"
-                color: 0, 0, 0, 1
-            Label:
-                text: "Arete App - Version 1.3\n\nThis is a demo application.\n\nFor support, contact support@arete.app"
-                color: 0, 0, 0, 1
-            Button:
-                text: "Back to Menu"
-                size_hint_y: None
-                height: dp(40)
-                on_release: root.manager.current = "main_menu"
-        Footer:
->>>>>>> Stashed changes
