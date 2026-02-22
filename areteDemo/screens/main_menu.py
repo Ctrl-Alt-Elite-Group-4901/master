@@ -1,8 +1,6 @@
 # areteDemo/screens/main_menu.py
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 import areteDemo.auth as auth
 
 

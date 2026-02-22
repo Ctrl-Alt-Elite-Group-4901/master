@@ -1,13 +1,23 @@
 # areteDemo/db.py
 import os
+import sys
 import sqlite3
 from sqlite3 import Connection
 
 DB_NAME = "arete.db"
 
+
 def get_db_path():
-    base = os.path.dirname(__file__)
+    # When running as a PyInstaller-frozen .exe, sys.frozen is set and
+    # sys.executable points to the .exe. We store the DB next to the .exe
+    # so it lives in a writable location.
+    # When running from source, __file__ gives the package directory as before.
+    if getattr(sys, "frozen", False):
+        base = os.path.dirname(sys.executable)
+    else:
+        base = os.path.dirname(__file__)
     return os.path.join(base, DB_NAME)
+
 
 def get_connection() -> Connection:
     path = get_db_path()
@@ -15,11 +25,12 @@ def get_connection() -> Connection:
     conn.row_factory = sqlite3.Row
     return conn
 
+
 def init_db():
     """Create tables if they don't exist."""
     conn = get_connection()
     cur = conn.cursor()
-    
+
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS users (
@@ -44,15 +55,16 @@ def init_db():
         )
         """
     )
-    
+
     cur.execute(
         """
-        CREATE INDEX IF NOT EXISTS idx_scores_user_id 
+        CREATE INDEX IF NOT EXISTS idx_scores_user_id
         ON scores(user_id, score DESC)
         """
     )
 
     conn.commit()
     conn.close()
+
 
 init_db()

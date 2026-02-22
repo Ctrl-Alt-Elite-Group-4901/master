@@ -1,8 +1,6 @@
 # areteDemo/screens/login.py
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty
 from kivy.app import App
-from kivy.clock import Clock
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 import areteDemo.auth as auth
