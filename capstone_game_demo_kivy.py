@@ -25,7 +25,7 @@ SPEED_INCREASE_PER_5_AVOIDED = 10
 SPAWN_INTERVAL_BASE = 1.6
 
 SLOW_ON_HIT_MULTIPLIER = 0.9
-MAX_HEALTH = 6           # hits before game over
+#MAX_HEALTH = 6           # hits before game over
 GAME_DURATION = 300      # 5 minutes (seconds)
 
 # Points awarded per obstacle avoided
@@ -77,7 +77,7 @@ class GameWidget(Widget):
     avoided_count  = NumericProperty(0)
     live_score     = NumericProperty(0)   # displayed live score
 
-    health         = NumericProperty(MAX_HEALTH)   # 6 → 0
+    #health         = NumericProperty(MAX_HEALTH)   # 6 → 0
 
     game_over             = BooleanProperty(False)
     on_game_over_callback = ObjectProperty(None, allownone=True)
@@ -152,15 +152,15 @@ class GameWidget(Widget):
         self.label_countdown.pos = (wx + ww / 2 - 60, wy + wh / 2 - 28)
 
     # ------------------------------------------------------------------ health bar colour helper
-    @staticmethod
-    def _health_color(health):
-        """Return (r,g,b) based on remaining health out of MAX_HEALTH."""
-        if health > MAX_HEALTH * 2 / 3:      # 5-6  green
-            return (0.2, 0.85, 0.2)
-        elif health > MAX_HEALTH / 3:         # 3-4  yellow
-            return (1.0, 0.85, 0.0)
-        else:                                  # 1-2  red
-            return (0.9, 0.15, 0.15)
+    #@staticmethod
+    #def _health_color(health):
+    #    """Return (r,g,b) based on remaining health out of MAX_HEALTH."""
+    #    if health > MAX_HEALTH * 2 / 3:      # 5-6  green
+    #        return (0.2, 0.85, 0.2)
+    #    elif health > MAX_HEALTH / 3:         # 3-4  yellow
+    #        return (1.0, 0.85, 0.0)
+    #    else:                                  # 1-2  red
+    #        return (0.9, 0.15, 0.15)
 
     # ------------------------------------------------------------------ input
     def _on_key_down(self, window, key, scancode, codepoint, modifiers):
@@ -200,7 +200,7 @@ class GameWidget(Widget):
         self.base_speed = INITIAL_SPEED
         self.player_y   = FLOOR_HEIGHT + PLAYER_RADIUS
         self.player_vy  = 0.0
-        self.health     = MAX_HEALTH
+    #    self.health     = MAX_HEALTH
 
         self.obstacles            = []
         self._spawn_accumulator   = 0.0
@@ -307,12 +307,14 @@ class GameWidget(Widget):
                         self.obstacles.remove(ob)
                     except ValueError:
                         pass
+                    
                     # Reduce health
-                    self.health -= 1
-                    if self.health <= 0:
-                        self.health = 0
-                        self.end_game()
-                        return
+                    #self.health -= 1
+                    #if self.health <= 0:
+                    #    self.health = 0
+                    #    self.end_game()
+                    #    return
+                    
                     # Slow-down penalty
                     self.speed = max(200, self.speed * SLOW_ON_HIT_MULTIPLIER)
                     self._slow_start_speed = self.speed
@@ -374,24 +376,24 @@ class GameWidget(Widget):
             Ellipse(pos=(px - small / 2, py - small / 2), size=(small, small))
 
             # ---- Health bar (top-right of widget) ----
-            bar_w  = 240
-            bar_h  = 28
-            bar_x  = wx + ww - bar_w - 20
-            bar_y  = wy + wh - bar_h - 10
-            pip_w  = (bar_w - (MAX_HEALTH - 1) * 4) / MAX_HEALTH
+            #bar_w  = 240
+            #bar_h  = 28
+            #bar_x  = wx + ww - bar_w - 20
+            #bar_y  = wy + wh - bar_h - 10
+            #pip_w  = (bar_w - (MAX_HEALTH - 1) * 4) / MAX_HEALTH
 
             # Background tray
-            Color(0.15, 0.15, 0.15, 0.75)
-            RoundedRectangle(pos=(bar_x - 4, bar_y - 4),
-                             size=(bar_w + 8, bar_h + 8), radius=[6])
+            #Color(0.15, 0.15, 0.15, 0.75)
+            #RoundedRectangle(pos=(bar_x - 4, bar_y - 4),
+            #                 size=(bar_w + 8, bar_h + 8), radius=[6])
 
             # Individual pip segments
-            hc = self._health_color(self.health)
-            for i in range(MAX_HEALTH):
-                pip_x = bar_x + i * (pip_w + 4)
-                Color(*hc) if i < self.health else Color(0.3, 0.3, 0.3, 1)
-                RoundedRectangle(pos=(pip_x, bar_y),
-                                 size=(pip_w, bar_h), radius=[4])
+            #hc = self._health_color(self.health)
+            #for i in range(MAX_HEALTH):
+            #    pip_x = bar_x + i * (pip_w + 4)
+            #    Color(*hc) if i < self.health else Color(0.3, 0.3, 0.3, 1)
+            #    RoundedRectangle(pos=(pip_x, bar_y),
+            #                     size=(pip_w, bar_h), radius=[4])
 
     # ------------------------------------------------------------------ end
     def end_game(self):
