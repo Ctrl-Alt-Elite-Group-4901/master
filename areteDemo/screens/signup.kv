@@ -1,0 +1,33 @@
+<SignupScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 50
+        spacing: 20
+
+        Label:
+            text: "Create Account"
+            font_size: 32
+
+        TextInput:
+            id: email
+            hint_text: "Email"
+            multiline: False
+
+        TextInput:
+            id: password
+            hint_text: "Password"
+            password: True
+            multiline: False
+
+        Label:
+            id: message
+            text: ""
+            color: 1,0,0,1
+
+        Button:
+            text: "Sign Up"
+            on_release: root.attempt_signup(email.text, password.text)
+
+        Button:
+            text: "Back to Login"
+            on_release: app.root.current = "login"
