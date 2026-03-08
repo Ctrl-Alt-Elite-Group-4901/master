@@ -39,15 +39,8 @@ GAME_DURATION = 300  # 5 minute game duration
 #SPAWN_PAUSE_ON_BG_SWITCH = 2.0  # pause obstacle spawning after background switches (sec)
 OBSTACLE_PREVIEW_SECONDS = 5.5  # spawn NEXT theme obstacles this many seconds before bg switch
 
-def _resource_path(relative_path):
-    """
-    Resolve a resource path across source and frozen layouts.
-
-    Search order:
-    1) PyInstaller bundle root (sys._MEIPASS)
-    2) This file's directory
-    3) This file's directory + "areteDemo" (repo layout on new-main)
-    """
+def _resource_path(relative_path): # helper to find resource path that works both in dev and when packaged with PyInstaller
+    
     candidates = []
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
         candidates.append(sys._MEIPASS)
