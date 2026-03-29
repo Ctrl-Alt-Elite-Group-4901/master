@@ -27,8 +27,8 @@ PLAYER_RADIUS = 30
 GRAVITY = -1200  # pixels per second^2 (negative = pulls down)
 JUMP_VELOCITY = 700  # initial jump velocity - tuned for feel
 
-INITIAL_SPEED = 240  # pixels/second (how fast obstacles move left)
-SPEED_INCREASE_PER_5_AVOIDED = 10  # speed increases incrementally for every 5 obstacles avoided
+INITIAL_SPEED = 260  # pixels/second (how fast obstacles move left)
+SPEED_INCREASE_PER_5_AVOIDED = 20  # speed increases incrementally for every 5 obstacles avoided
 OBSTACLE_MIN_GAP = 350
 OBSTACLE_MAX_GAP = 900
 SPAWN_INTERVAL_BASE = 2.0  # base interval between obstacles (sec) - modified by speed
@@ -233,7 +233,7 @@ class GameWidget(Widget):
 
     def spawn_obstacle(self):
         # spawn a square obstacle at right side
-        size = random.randint(70, 100)
+        size = 70
         x = WINDOW_WIDTH + random.randint(0, 120)
         y = FLOOR_HEIGHT
 
