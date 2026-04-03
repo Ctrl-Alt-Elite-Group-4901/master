@@ -3,6 +3,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from kivy.config import Config
+
+Config.set("graphics", "fullscreen", "auto")
+Config.set("graphics", "borderless", "1")
+Config.set("graphics", "resizable", "0")
+
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, FadeTransition
@@ -40,11 +46,24 @@ class AreteApp(App):
     theme_header = ListProperty([0.12, 0.45, 0.88, 1])
     theme_footer = ListProperty([0.95, 0.95, 0.95, 1])
     theme_background = ListProperty([1, 1, 1, 1])
+    theme_card = ListProperty([1, 1, 1, 0.97])
+    theme_input = ListProperty([0.96, 0.97, 0.99, 1])
+    theme_text_primary = ListProperty([0.11, 0.14, 0.18, 1])
+    theme_text_muted = ListProperty([0.43, 0.47, 0.54, 1])
+    theme_button_secondary = ListProperty([0.24, 0.29, 0.37, 1])
+    theme_button_danger = ListProperty([0.82, 0.28, 0.28, 1])
+    theme_footer_text = ListProperty([0.33, 0.36, 0.41, 1])
 
     # Player color (from old branch) - used by GameScreen to tint the runner
     player_color = ListProperty([1, 1, 1, 1])
 
+    @staticmethod
+    def _lock_fullscreen():
+        Window.fullscreen = "auto"
+        Window.borderless = True
+
     def build(self):
+        self._lock_fullscreen()
         main_kv = os.path.join(KV_DIR, "main.kv")
         if os.path.exists(main_kv):
             Builder.load_file(main_kv)
@@ -59,6 +78,9 @@ class AreteApp(App):
         sm.add_widget(HelpScreen(name="help"))
         sm.add_widget(ReflectionScreen(name="reflection"))
         return sm
+
+    def on_start(self):
+        self._lock_fullscreen()
 
 
 if __name__ == "__main__":

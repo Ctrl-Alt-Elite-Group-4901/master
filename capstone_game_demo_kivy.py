@@ -20,6 +20,10 @@ import time
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
 FLOOR_HEIGHT = 150
+PLAYER_X = 400.0
+
+FLOOR_HEIGHT_RATIO = FLOOR_HEIGHT / WINDOW_HEIGHT
+PLAYER_X_RATIO = PLAYER_X / WINDOW_WIDTH
 
 # BASE_FLOOR_RATIO = 0.15
 
@@ -56,6 +60,11 @@ def _resource_path(relative_path): # helper to find resource path that works bot
 
     return os.path.join(repo_base, relative_path)
 
+
+def lock_window_fullscreen():
+    Window.fullscreen = "auto"
+    Window.borderless = True
+
 class Obstacle:
     def __init__(self, x, y, size, source):
         self.x = x
@@ -87,16 +96,18 @@ class GameWidget(Widget):
     def __init__(self, embedded=False, **kwargs):
         super().__init__(**kwargs)
         if not embedded:
-            Window.size = (WINDOW_WIDTH, WINDOW_HEIGHT)
+            lock_window_fullscreen()
         Window.bind(on_key_down=self._on_key_down)
-        #Window.bind(on_resize=self._on_resize)
-        
-        self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
+        Window.bind(on_resize=self._on_resize)
+
+        self.is_active = True
+        self.player_x = self.viewport_width * PLAYER_X_RATIO
+        self.player_y = self.floor_height + PLAYER_RADIUS
+        self._last_floor_height = self.floor_height
         
         # Player color property (Merged from our work)
         self.player_color = [1, 1, 1, 1]
 
-        self._last_spawn_x = WINDOW_WIDTH + 100
         self._spawn_accumulator = 0.0
         self._time = time.time()
         self._slow_start_speed = None
@@ -131,20 +142,20 @@ class GameWidget(Widget):
 
         # UI labels (bold colors so they show on sea background)
         self.label_countdown = Label(
-            text="", font_size=56, pos=(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/2 - 28),
-            color=(0, 0, 0, 1), bold=True
+            text="", font_size=56, color=(0, 0, 0, 1), bold=True
         )
         self.add_widget(self.label_countdown)
         self.hud = Label(
-            text="", font_size=22, pos=(10, WINDOW_HEIGHT - 36),
-            color=(0, 0, 0, 1), bold=True
+            text="", font_size=22, color=(0, 0, 0, 1), bold=True,
+            halign="left", valign="middle"
         )
         self.add_widget(self.hud)
         self.msg = Label(
-            text="Press SPACE or ENTER to start", font_size=26, pos=(WINDOW_WIDTH/2 - 200, WINDOW_HEIGHT/2 + 30),
-            color=(0, 0, 0, 1), bold=True
+            text="Press SPACE or ENTER to start", font_size=26,
+            color=(0, 0, 0, 1), bold=True, halign="center", valign="middle"
         )
         self.add_widget(self.msg)
+        self._layout_overlay()
 
         # schedule update
         Clock.schedule_interval(self.update, 1.0/60.0)
@@ -163,11 +174,62 @@ class GameWidget(Widget):
         #def floor_height(self):
         #    return self.height * BASE_FLOOR_RATIO
 
+    @property
+    def viewport_width(self):
+        return Window.width or WINDOW_WIDTH
+
+    @property
+    def viewport_height(self):
+        return Window.height or WINDOW_HEIGHT
+
+    @property
+    def floor_height(self):
+        return self.viewport_height * FLOOR_HEIGHT_RATIO
+
+    def _layout_overlay(self):
+        self.label_countdown.size = (240, 100)
+        self.label_countdown.text_size = self.label_countdown.size
+        self.label_countdown.center = (self.viewport_width / 2, self.viewport_height / 2)
+
+        self.hud.size = (max(self.viewport_width - 20, 100), 40)
+        self.hud.text_size = self.hud.size
+        self.hud.pos = (10, self.viewport_height - self.hud.height - 10)
+
+        self.msg.size = (self.viewport_width * 0.7, 120)
+        self.msg.text_size = self.msg.size
+        self.msg.center = (
+            self.viewport_width / 2,
+            self.viewport_height / 2 + self.viewport_height * 0.08,
+        )
+
+    def _on_resize(self, *_):
+        previous_floor_height = getattr(self, "_last_floor_height", self.floor_height)
+        vertical_clearance = max(self.player_y - previous_floor_height, PLAYER_RADIUS)
+
+        self.player_x = self.viewport_width * PLAYER_X_RATIO
+        if self.is_running or self.is_counting_down:
+            self.player_y = max(self.floor_height + PLAYER_RADIUS, self.floor_height + vertical_clearance)
+        else:
+            self.player_y = self.floor_height + PLAYER_RADIUS
+
+        self._last_floor_height = self.floor_height
+        self._layout_overlay()
+
+    def set_active(self, active):
+        self.is_active = active
+
+    def dispose(self):
+        Window.unbind(on_key_down=self._on_key_down)
+        Window.unbind(on_resize=self._on_resize)
+        Clock.unschedule(self.update)
+
     # Helper method to set color (Merged from our work)
     def set_player_color(self, r, g, b, a=1):
         self.player_color = [r, g, b, a]
     
     def _on_key_down(self, window, key, scancode, codepoint, modifiers):
+        if not self.is_active:
+            return
         # SPACE = 32, Enter/Return = 13 (both start countdown and restart; only SPACE jumps)
         if key not in (32, 13):
             return
@@ -202,7 +264,8 @@ class GameWidget(Widget):
         # reset all state
         self.speed = INITIAL_SPEED
         self.base_speed = INITIAL_SPEED
-        self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
+        self.player_x = self.viewport_width * PLAYER_X_RATIO
+        self.player_y = self.floor_height + PLAYER_RADIUS
         self.player_vy = 0.0
         
         self.obstacles = []
@@ -225,17 +288,18 @@ class GameWidget(Widget):
         self._bg_elapsed = 0.0
         self._slow_until = None
         self._spawn_pause_remaining = 0.0
-
+        self._last_floor_height = self.floor_height
+        self._layout_overlay()
 
     def on_ground(self):
         # player's center y equals ground + radius
-        return abs(self.player_y - (FLOOR_HEIGHT + PLAYER_RADIUS)) < 1.0 and self.player_vy <= 0.0
+        return abs(self.player_y - (self.floor_height + PLAYER_RADIUS)) < 1.0 and self.player_vy <= 0.0
 
     def spawn_obstacle(self):
         # spawn a square obstacle at right side
         size = 70
-        x = WINDOW_WIDTH + random.randint(0, 120)
-        y = FLOOR_HEIGHT
+        x = self.viewport_width + random.randint(0, 120)
+        y = self.floor_height
 
         # If we are within N seconds of a background switch,
         # spawn obstacles using the NEXT background's obstacle theme
@@ -260,7 +324,7 @@ class GameWidget(Widget):
             Color(1, 1, 1, 1)
             Rectangle(
                 pos=(0, 0),
-                size=(WINDOW_WIDTH, WINDOW_HEIGHT),
+                size=(self.viewport_width, self.viewport_height),
                 source=self.bg_source
             )
 
@@ -307,8 +371,8 @@ class GameWidget(Widget):
             self.player_vy += GRAVITY * dt
             self.player_y += self.player_vy * dt
             # collision with ground
-            if self.player_y < FLOOR_HEIGHT + PLAYER_RADIUS:
-                self.player_y = FLOOR_HEIGHT + PLAYER_RADIUS
+            if self.player_y < self.floor_height + PLAYER_RADIUS:
+                self.player_y = self.floor_height + PLAYER_RADIUS
                 self.player_vy = 0.0
 
             # speed increase logic: every 5 avoided, increase base speed by fixed amount
@@ -412,6 +476,7 @@ class GameWidget(Widget):
 
 class CapstoneGameDemoApp(App):
     def build(self):
+        lock_window_fullscreen()
         root = GameWidget()
         return root
 

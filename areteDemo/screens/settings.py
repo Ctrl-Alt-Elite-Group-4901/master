@@ -22,11 +22,25 @@ class Settings(Screen):
             app.theme_background = [0.1, 0.1, 0.1, 1]
             app.theme_header = [0.05, 0.25, 0.55, 1]
             app.theme_footer = [0.15, 0.15, 0.15, 1]
+            app.theme_card = [0.16, 0.18, 0.23, 0.98]
+            app.theme_input = [0.2, 0.23, 0.29, 1]
+            app.theme_text_primary = [0.94, 0.96, 0.99, 1]
+            app.theme_text_muted = [0.67, 0.72, 0.79, 1]
+            app.theme_button_secondary = [0.3, 0.36, 0.47, 1]
+            app.theme_button_danger = [0.78, 0.32, 0.32, 1]
+            app.theme_footer_text = [0.75, 0.78, 0.83, 1]
             self._show_message("Theme changed to dark mode.")
         else:
             app.theme_background = [1, 1, 1, 1]
             app.theme_header = [0.12, 0.45, 0.88, 1]
             app.theme_footer = [0.95, 0.95, 0.95, 1]
+            app.theme_card = [1, 1, 1, 0.97]
+            app.theme_input = [0.96, 0.97, 0.99, 1]
+            app.theme_text_primary = [0.11, 0.14, 0.18, 1]
+            app.theme_text_muted = [0.43, 0.47, 0.54, 1]
+            app.theme_button_secondary = [0.24, 0.29, 0.37, 1]
+            app.theme_button_danger = [0.82, 0.28, 0.28, 1]
+            app.theme_footer_text = [0.33, 0.36, 0.41, 1]
             self._show_message("Theme changed to light mode.")
 
     def show_change_password_dialog(self):

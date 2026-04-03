@@ -1,12 +1,10 @@
 #:kivy 2.2.0
 #:import FadeTransition kivy.uix.screenmanager.FadeTransition
-
 # ===== WIDGET TEMPLATES =====
 <Header@BoxLayout>:
     size_hint_y: None
-    height: dp(60)
-    padding: dp(10)
-    spacing: dp(10)
+    height: dp(64)
+    padding: dp(18), 0
     canvas.before:
         Color:
             rgba: app.theme_header
@@ -16,14 +14,13 @@
     Label:
         text: "Arete App"
         bold: True
-        font_size: "20sp"
+        font_size: "22sp"
         color: 1, 1, 1, 1
 
 <Footer@BoxLayout>:
     size_hint_y: None
-    height: dp(50)
-    padding: dp(10)
-    spacing: dp(10)
+    height: dp(42)
+    padding: dp(12), 0
     canvas.before:
         Color:
             rgba: app.theme_footer
@@ -31,9 +28,96 @@
             pos: self.pos
             size: self.size
     Label:
-        text: "© Arete - ver 1.3"
-        font_size: "14sp"
-        color: 0.3, 0.3, 0.3, 1
+        text: "Arete - v1.3"
+        font_size: "13sp"
+        color: app.theme_footer_text
+
+<ScreenCard@BoxLayout>:
+    orientation: "vertical"
+    size_hint: None, None
+    height: self.minimum_size[1]
+    padding: dp(28)
+    spacing: dp(14)
+    canvas.before:
+        Color:
+            rgba: app.theme_card
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(22),]
+
+<ScreenTitle@Label>:
+    size_hint_y: None
+    height: self.texture_size[1] + dp(6)
+    font_size: "28sp"
+    bold: True
+    color: app.theme_text_primary
+    halign: "left"
+    valign: "middle"
+    text_size: self.width, None
+
+<ScreenBodyText@Label>:
+    size_hint_y: None
+    height: self.texture_size[1]
+    font_size: "15sp"
+    color: app.theme_text_muted
+    halign: "left"
+    valign: "middle"
+    text_size: self.width, None
+
+<FieldLabel@Label>:
+    size_hint_y: None
+    height: self.texture_size[1] + dp(2)
+    font_size: "15sp"
+    bold: True
+    color: app.theme_text_primary
+    halign: "left"
+    valign: "middle"
+    text_size: self.width, None
+
+<FormInput@TextInput>:
+    size_hint_y: None
+    height: dp(52)
+    multiline: False
+    write_tab: False
+    font_size: "16sp"
+    padding: [dp(14), dp(16), dp(14), dp(16)]
+    background_normal: ""
+    background_active: ""
+    background_color: app.theme_input
+    foreground_color: app.theme_text_primary
+    hint_text_color: app.theme_text_muted
+    cursor_color: app.theme_header
+
+<PrimaryButton@Button>:
+    size_hint_y: None
+    height: dp(48)
+    font_size: "16sp"
+    bold: True
+    background_normal: ""
+    background_down: ""
+    background_color: app.theme_header
+    color: 1, 1, 1, 1
+
+<SecondaryButton@Button>:
+    size_hint_y: None
+    height: dp(48)
+    font_size: "16sp"
+    bold: True
+    background_normal: ""
+    background_down: ""
+    background_color: app.theme_button_secondary
+    color: 1, 1, 1, 1
+
+<DangerButton@Button>:
+    size_hint_y: None
+    height: dp(48)
+    font_size: "16sp"
+    bold: True
+    background_normal: ""
+    background_down: ""
+    background_color: app.theme_button_danger
+    color: 1, 1, 1, 1
 
 # ===== SCREEN DEFINITIONS =====
 
@@ -48,35 +132,39 @@
     BoxLayout:
         orientation: "vertical"
         Header:
-        BoxLayout:
-            orientation: "vertical"
-            padding: dp(20)
-            spacing: dp(10)
-            Label:
-                text: "Login"
-                font_size: "24sp"
-                color: 0, 0, 0, 1
-                size_hint_y: None
-                height: dp(40)
-            TextInput:
-                id: email
-                hint_text: "Email"
-                multiline: False
-            TextInput:
-                id: password
-                hint_text: "Password"
-                password: True
-                multiline: False
-            Button:
-                text: "Login"
-                size_hint_y: None
-                height: dp(44)
-                on_release: root.login_user()
-            Button:
-                text: "Sign Up"
-                size_hint_y: None
-                height: dp(44)
-                on_release: root.go_to_signup()
+        AnchorLayout:
+            padding: dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            ScreenCard:
+                width: min(root.width - dp(48), dp(460))
+                ScreenTitle:
+                    text: "Welcome Back"
+                ScreenBodyText:
+                    text: "Sign in to continue your Arete session."
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                FieldLabel:
+                    text: "Email"
+                FormInput:
+                    id: email
+                    hint_text: "name@example.com"
+                FieldLabel:
+                    text: "Password"
+                FormInput:
+                    id: password
+                    hint_text: "Password"
+                    password: True
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                PrimaryButton:
+                    text: "Login"
+                    on_release: root.login_user()
+                SecondaryButton:
+                    text: "Create an Account"
+                    on_release: root.go_to_signup()
         Footer:
 
 <Register>:
@@ -90,43 +178,49 @@
     BoxLayout:
         orientation: "vertical"
         Header:
-        BoxLayout:
-            orientation: "vertical"
-            padding: dp(20)
-            spacing: dp(10)
-            Label:
-                text: "Register"
-                font_size: "24sp"
-                color: 0, 0, 0, 1
-                size_hint_y: None
-                height: dp(40)
-            TextInput:
-                id: first_name
-                hint_text: "First Name"
-                multiline: False
-            TextInput:
-                id: last_name
-                hint_text: "Last Name"
-                multiline: False
-            TextInput:
-                id: email
-                hint_text: "Email"
-                multiline: False
-            TextInput:
-                id: password
-                hint_text: "Password"
-                password: True
-                multiline: False
-            Button:
-                text: "Create Account"
-                size_hint_y: None
-                height: dp(44)
-                on_release: root.signup_user()
-            Button:
-                text: "Back to Login"
-                size_hint_y: None
-                height: dp(44)
-                on_release: root.go_to_login()
+        AnchorLayout:
+            padding: dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            ScreenCard:
+                width: min(root.width - dp(48), dp(520))
+                ScreenTitle:
+                    text: "Create Account"
+                ScreenBodyText:
+                    text: "Set up your profile so you can jump straight into the experience."
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                FieldLabel:
+                    text: "First Name"
+                FormInput:
+                    id: first_name
+                    hint_text: "First name"
+                FieldLabel:
+                    text: "Last Name"
+                FormInput:
+                    id: last_name
+                    hint_text: "Last name"
+                FieldLabel:
+                    text: "Email"
+                FormInput:
+                    id: email
+                    hint_text: "name@example.com"
+                FieldLabel:
+                    text: "Password"
+                FormInput:
+                    id: password
+                    hint_text: "Choose a password"
+                    password: True
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                PrimaryButton:
+                    text: "Create Account"
+                    on_release: root.signup_user()
+                SecondaryButton:
+                    text: "Back to Login"
+                    on_release: root.go_to_login()
         Footer:
 
 <MainMenu>:
@@ -140,41 +234,34 @@
     BoxLayout:
         orientation: "vertical"
         Header:
-        BoxLayout:
-            orientation: "vertical"
-            padding: dp(20)
-            spacing: dp(15)
-            Label:
-                text: "Main Menu"
-                font_size: "24sp"
-                color: 0, 0, 0, 1
-                size_hint_y: None
-                height: dp(40)
-            Button:
-                text: "Play Game"
-                size_hint_y: None
-                height: dp(50)
-                on_release: root.go_to_game()
-            Button:
-                text: "Profile"
-                size_hint_y: None
-                height: dp(50)
-                on_release: root.go_to_profile()
-            Button:
-                text: "Settings"
-                size_hint_y: None
-                height: dp(50)
-                on_release: root.manager.current = "settings"
-            Button:
-                text: "Help"
-                size_hint_y: None
-                height: dp(50)
-                on_release: root.manager.current = "help"
-            Button:
-                text: "Logout"
-                size_hint_y: None
-                height: dp(50)
-                on_release: root.logout()
+        AnchorLayout:
+            padding: dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            ScreenCard:
+                width: min(root.width - dp(48), dp(520))
+                ScreenTitle:
+                    text: "Main Menu"
+                ScreenBodyText:
+                    text: "Choose where you want to go next."
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                PrimaryButton:
+                    text: "Play Game"
+                    on_release: root.go_to_game()
+                SecondaryButton:
+                    text: "Profile"
+                    on_release: root.go_to_profile()
+                SecondaryButton:
+                    text: "Settings"
+                    on_release: root.manager.current = "settings"
+                SecondaryButton:
+                    text: "Help"
+                    on_release: root.manager.current = "help"
+                DangerButton:
+                    text: "Logout"
+                    on_release: root.logout()
         Footer:
 
 <Profile>:
@@ -189,157 +276,154 @@
         orientation: "vertical"
         Header:
         ScrollView:
-            BoxLayout:
-                orientation: "vertical"
-                padding: dp(20)
-                spacing: dp(10)
+            do_scroll_x: False
+            bar_width: dp(8)
+            GridLayout:
+                cols: 1
                 size_hint_y: None
-                height: self.minimum_height
+                height: self.minimum_size[1]
+                padding: dp(24)
+                spacing: dp(20)
 
-                Label:
-                    text: "Edit Profile"
-                    font_size: "24sp"
-                    color: 0, 0, 0, 1
+                AnchorLayout:
                     size_hint_y: None
-                    height: dp(40)
+                    height: account_card.height
+                    anchor_x: "center"
+                    anchor_y: "top"
+                    ScreenCard:
+                        id: account_card
+                        width: min(root.width - dp(48), dp(760))
+                        ScreenTitle:
+                            text: "Profile"
+                        ScreenBodyText:
+                            text: "Manage your account details and keep your information up to date."
+                        Widget:
+                            size_hint_y: None
+                            height: dp(4)
+                        GridLayout:
+                            cols: 2 if self.width > dp(560) else 1
+                            size_hint_y: None
+                            height: self.minimum_size[1]
+                            spacing: dp(14)
+                            BoxLayout:
+                                orientation: "vertical"
+                                size_hint_y: None
+                                height: self.minimum_size[1]
+                                spacing: dp(6)
+                                FieldLabel:
+                                    text: "First Name"
+                                FormInput:
+                                    id: first_name
+                                    hint_text: "First name"
+                            BoxLayout:
+                                orientation: "vertical"
+                                size_hint_y: None
+                                height: self.minimum_size[1]
+                                spacing: dp(6)
+                                FieldLabel:
+                                    text: "Last Name"
+                                FormInput:
+                                    id: last_name
+                                    hint_text: "Last name"
+                        BoxLayout:
+                            orientation: "vertical"
+                            size_hint_y: None
+                            height: self.minimum_size[1]
+                            spacing: dp(6)
+                            FieldLabel:
+                                text: "Email"
+                            FormInput:
+                                id: email
+                                hint_text: "name@example.com"
+                        GridLayout:
+                            cols: 2 if self.width > dp(560) else 1
+                            size_hint_y: None
+                            height: self.minimum_size[1]
+                            spacing: dp(12)
+                            PrimaryButton:
+                                text: "Save Changes"
+                                on_release: root.save_profile()
+                            SecondaryButton:
+                                text: "Go to Settings"
+                                on_release: root.go_to_settings()
+                        SecondaryButton:
+                            text: "Back to Menu"
+                            on_release: root.manager.current = "main_menu"
 
-                Label:
-                    text: "First Name"
-                    font_size: "16sp"
-                    color: 0, 0, 0, 1
+                AnchorLayout:
                     size_hint_y: None
-                    height: dp(30)
-                    halign: "left"
-                    text_size: self.size
-
-                TextInput:
-                    id: first_name
-                    hint_text: "First Name"
-                    multiline: False
-                    size_hint_y: None
-                    height: dp(40)
-
-                Label:
-                    text: "Last Name"
-                    font_size: "16sp"
-                    color: 0, 0, 0, 1
-                    size_hint_y: None
-                    height: dp(30)
-                    halign: "left"
-                    text_size: self.size
-
-                TextInput:
-                    id: last_name
-                    hint_text: "Last Name"
-                    multiline: False
-                    size_hint_y: None
-                    height: dp(40)
-
-                Label:
-                    text: "Email"
-                    font_size: "16sp"
-                    color: 0, 0, 0, 1
-                    size_hint_y: None
-                    height: dp(30)
-                    halign: "left"
-                    text_size: self.size
-
-                TextInput:
-                    id: email
-                    hint_text: "Email"
-                    multiline: False
-                    size_hint_y: None
-                    height: dp(40)
-
-                Button:
-                    text: "Save Changes"
-                    size_hint_y: None
-                    height: dp(50)
-                    background_color: 0.12, 0.45, 0.88, 1
-                    on_release: root.save_profile()
-
-                # Score Table Section
-                Widget:
-                    size_hint_y: None
-                    height: dp(20)
-
-                Label:
-                    text: "Leaderboard"
-                    font_size: "20sp"
-                    bold: True
-                    color: 0, 0, 0, 1
-                    size_hint_y: None
-                    height: dp(40)
-
-                Label:
-                    id: scores_table
-                    text: "Loading scores..."
-                    font_size: "16sp"
-                    color: 0, 0, 0, 1
-                    size_hint_y: None
-                    height: dp(150)
-                    text_size: self.width, None
-                    halign: "left"
-                    valign: "top"
-
-                Widget:
-                    size_hint_y: None
-                    height: dp(20)
-
-                # Character colour picker (restored from old branch)
-                Label:
-                    text: "Choose Character Color:"
-                    font_size: "18sp"
-                    color: 0, 0, 0, 1
-                    size_hint_y: None
-                    height: dp(36)
-                    halign: "left"
-                    text_size: self.size
-
-                BoxLayout:
-                    size_hint_y: None
-                    height: dp(50)
-                    spacing: dp(10)
-                    Button:
-                        text: "White"
-                        background_normal: ''
-                        background_color: 0.85, 0.85, 0.85, 1
-                        color: 0, 0, 0, 1
-                        on_release: app.player_color = [1, 1, 1, 1]
-                    Button:
-                        text: "Red"
-                        background_normal: ''
-                        background_color: 1, 0.3, 0.3, 1
-                        color: 1, 1, 1, 1
-                        on_release: app.player_color = [1, 0.3, 0.3, 1]
-                    Button:
-                        text: "Blue"
-                        background_normal: ''
-                        background_color: 0.3, 0.5, 1, 1
-                        color: 1, 1, 1, 1
-                        on_release: app.player_color = [0.3, 0.5, 1, 1]
-                    Button:
-                        text: "Green"
-                        background_normal: ''
-                        background_color: 0.3, 1, 0.3, 1
-                        color: 0, 0, 0, 1
-                        on_release: app.player_color = [0.3, 1, 0.3, 1]
-
-                Widget:
-                    size_hint_y: None
-                    height: dp(10)
-
-                Button:
-                    text: "Go to Settings"
-                    size_hint_y: None
-                    height: dp(44)
-                    on_release: root.go_to_settings()
-
-                Button:
-                    text: "Back to Menu"
-                    size_hint_y: None
-                    height: dp(44)
-                    on_release: root.manager.current = "main_menu"
+                    height: progress_card.height
+                    anchor_x: "center"
+                    anchor_y: "top"
+                    ScreenCard:
+                        id: progress_card
+                        width: min(root.width - dp(48), dp(760))
+                        ScreenTitle:
+                            text: "Progress and Style"
+                        ScreenBodyText:
+                            text: "Review your recent scores and pick the runner color you want to use in game."
+                        Widget:
+                            size_hint_y: None
+                            height: dp(2)
+                        FieldLabel:
+                            text: "Leaderboard"
+                        Label:
+                            id: scores_table
+                            text: "Loading scores..."
+                            size_hint_y: None
+                            height: max(dp(140), self.texture_size[1] + dp(20))
+                            font_size: "16sp"
+                            color: app.theme_text_primary
+                            halign: "left"
+                            valign: "top"
+                            text_size: self.width, None
+                        FieldLabel:
+                            text: "Choose Character Color"
+                        GridLayout:
+                            cols: 4 if self.width > dp(560) else 2
+                            size_hint_y: None
+                            height: self.minimum_size[1]
+                            spacing: dp(10)
+                            Button:
+                                text: "White"
+                                size_hint_y: None
+                                height: dp(46)
+                                bold: True
+                                background_normal: ""
+                                background_down: ""
+                                background_color: 0.88, 0.88, 0.9, 1
+                                color: 0.08, 0.08, 0.08, 1
+                                on_release: app.player_color = [1, 1, 1, 1]
+                            Button:
+                                text: "Red"
+                                size_hint_y: None
+                                height: dp(46)
+                                bold: True
+                                background_normal: ""
+                                background_down: ""
+                                background_color: 0.93, 0.36, 0.36, 1
+                                color: 1, 1, 1, 1
+                                on_release: app.player_color = [1, 0.3, 0.3, 1]
+                            Button:
+                                text: "Blue"
+                                size_hint_y: None
+                                height: dp(46)
+                                bold: True
+                                background_normal: ""
+                                background_down: ""
+                                background_color: 0.32, 0.52, 0.95, 1
+                                color: 1, 1, 1, 1
+                                on_release: app.player_color = [0.3, 0.5, 1, 1]
+                            Button:
+                                text: "Green"
+                                size_hint_y: None
+                                height: dp(46)
+                                bold: True
+                                background_normal: ""
+                                background_down: ""
+                                background_color: 0.36, 0.78, 0.39, 1
+                                color: 1, 1, 1, 1
+                                on_release: app.player_color = [0.3, 1, 0.3, 1]
         Footer:
 
 <Settings>:
@@ -353,41 +437,31 @@
     BoxLayout:
         orientation: "vertical"
         Header:
-        BoxLayout:
-            orientation: "vertical"
-            padding: dp(20)
-            spacing: dp(10)
-            Label:
-                text: "Settings"
-                font_size: "24sp"
-                color: 0, 0, 0, 1
-                size_hint_y: None
-                height: dp(40)
-            Widget:
-                size_hint_y: 0.3
-            Button:
-                text: "Toggle Light/Dark Mode"
-                size_hint_y: None
-                height: dp(50)
-                on_release: root.toggle_theme()
-            Button:
-                text: "Change Password"
-                size_hint_y: None
-                height: dp(50)
-                on_release: root.show_change_password_dialog()
-            Button:
-                text: "Delete Account"
-                size_hint_y: None
-                height: dp(50)
-                background_color: 1, 0.3, 0.3, 1
-                on_release: root.show_delete_account_dialog()
-            Widget:
-                size_hint_y: 0.3
-            Button:
-                text: "Back to Menu"
-                size_hint_y: None
-                height: dp(44)
-                on_release: root.manager.current = "main_menu"
+        AnchorLayout:
+            padding: dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            ScreenCard:
+                width: min(root.width - dp(48), dp(560))
+                ScreenTitle:
+                    text: "Settings"
+                ScreenBodyText:
+                    text: "Adjust the visual theme and manage account actions from one place."
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                SecondaryButton:
+                    text: "Toggle Light/Dark Mode"
+                    on_release: root.toggle_theme()
+                SecondaryButton:
+                    text: "Change Password"
+                    on_release: root.show_change_password_dialog()
+                DangerButton:
+                    text: "Delete Account"
+                    on_release: root.show_delete_account_dialog()
+                SecondaryButton:
+                    text: "Back to Menu"
+                    on_release: root.manager.current = "main_menu"
         Footer:
 
 <GameScreen>:
@@ -408,33 +482,25 @@
     BoxLayout:
         orientation: "vertical"
         Header:
-        BoxLayout:
-            orientation: "vertical"
-            padding: dp(20)
-            spacing: dp(15)
-            Label:
-                text: "Help"
-                font_size: "24sp"
-                color: 0, 0, 0, 1
-                size_hint_y: None
-                height: dp(40)
-            Label:
-                text: "Use SPACE or ENTER to start the game and to jump.\nAvoid the red obstacles.\nSurvive as long as possible — you have 5 minutes!\nAfter the game, answer the reflection questions."
-                font_size: "16sp"
-                color: 0, 0, 0, 1
-                halign: "left"
-                text_size: self.width, None
-            Widget:
-            Button:
-                text: "About"
-                size_hint_y: None
-                height: dp(44)
-                on_release: root.show_about()
-            Button:
-                text: "Back to Menu"
-                size_hint_y: None
-                height: dp(44)
-                on_release: root.manager.current = "main_menu"
+        AnchorLayout:
+            padding: dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            ScreenCard:
+                width: min(root.width - dp(48), dp(680))
+                ScreenTitle:
+                    text: "Help"
+                ScreenBodyText:
+                    text: "Use SPACE or ENTER to start the game and jump. Avoid the red obstacles, survive for 5 minutes, and then complete the reflection questions."
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                SecondaryButton:
+                    text: "About"
+                    on_release: root.show_about()
+                SecondaryButton:
+                    text: "Back to Menu"
+                    on_release: root.manager.current = "main_menu"
         Footer:
 
 # ===== REFLECTION SCREEN =====
@@ -449,90 +515,113 @@
     BoxLayout:
         orientation: "vertical"
         Header:
-        BoxLayout:
-            orientation: "vertical"
+        AnchorLayout:
             padding: dp(24)
-            spacing: dp(14)
-
-            # --- Quiz section ---
-            BoxLayout:
-                id: quiz_box
-                orientation: "vertical"
-                spacing: dp(14)
-
-                Label:
-                    id: progress_label
-                    text: ""
-                    font_size: "16sp"
-                    color: 0.4, 0.4, 0.4, 1
+            anchor_x: "center"
+            anchor_y: "center"
+            ScreenCard:
+                width: min(root.width - dp(48), dp(760))
+                BoxLayout:
+                    id: quiz_box
+                    orientation: "vertical"
                     size_hint_y: None
-                    height: dp(28)
+                    height: dp(318) if not self.disabled else 0
+                    spacing: dp(14)
 
-                Label:
-                    id: question_label
-                    text: ""
-                    font_size: "20sp"
-                    bold: True
-                    color: 0, 0, 0, 1
-                    text_size: self.width, None
-                    halign: "left"
-                    size_hint_y: None
-                    height: dp(80)
+                    Label:
+                        id: quiz_title
+                        text: "Reflection"
+                        font_size: "24sp"
+                        bold: True
+                        color: app.theme_text_primary
+                        size_hint_y: None
+                        height: dp(40) if not quiz_box.disabled else 0
+                        opacity: 1 if not quiz_box.disabled else 0
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.width, None
 
-                GridLayout:
-                    cols: 2
-                    spacing: dp(10)
-                    size_hint_y: None
-                    height: dp(120)
-                    Button:
-                        id: choice_0
+                    Label:
+                        id: progress_label
                         text: ""
-                        on_release: root.on_choice(0)
-                    Button:
-                        id: choice_1
+                        font_size: "16sp"
+                        color: app.theme_text_muted
+                        size_hint_y: None
+                        height: dp(28) if not quiz_box.disabled else 0
+                        opacity: 1 if not quiz_box.disabled else 0
+                        halign: "left"
+                        text_size: self.width, None
+
+                    Label:
+                        id: question_label
                         text: ""
-                        on_release: root.on_choice(1)
-                    Button:
-                        id: choice_2
-                        text: ""
-                        on_release: root.on_choice(2)
-                    Button:
-                        id: choice_3
-                        text: ""
-                        on_release: root.on_choice(3)
+                        font_size: "20sp"
+                        bold: True
+                        color: app.theme_text_primary
+                        text_size: self.width, None
+                        halign: "left"
+                        valign: "middle"
+                        size_hint_y: None
+                        height: dp(88) if not quiz_box.disabled else 0
+                        opacity: 1 if not quiz_box.disabled else 0
 
-            # --- Done section (hidden until quiz complete) ---
-            BoxLayout:
-                id: done_box
-                orientation: "vertical"
-                spacing: dp(20)
-                opacity: 0
-                disabled: True
+                    GridLayout:
+                        id: choices_grid
+                        cols: 2
+                        spacing: dp(12)
+                        size_hint_y: None
+                        height: dp(120) if not quiz_box.disabled else 0
+                        opacity: 1 if not quiz_box.disabled else 0
+                        PrimaryButton:
+                            id: choice_0
+                            text: ""
+                            on_release: root.on_choice(0)
+                        PrimaryButton:
+                            id: choice_1
+                            text: ""
+                            on_release: root.on_choice(1)
+                        PrimaryButton:
+                            id: choice_2
+                            text: ""
+                            on_release: root.on_choice(2)
+                        PrimaryButton:
+                            id: choice_3
+                            text: ""
+                            on_release: root.on_choice(3)
 
-                Label:
-                    id: done_label
-                    text: "Thank You for Playing!"
-                    font_size: "22sp"
-                    bold: True
-                    color: 0, 0, 0, 1
-                    halign: "center"
-                    text_size: self.width, None
+                BoxLayout:
+                    id: done_box
+                    orientation: "vertical"
                     size_hint_y: None
-                    height: dp(80)
+                    height: dp(232) if not self.disabled else 0
+                    spacing: dp(20)
+                    opacity: 0
+                    disabled: True
 
-                Button:
-                    id: done_back_btn
-                    text: "Play Again"
-                    size_hint_y: None
-                    height: dp(50)
-                    background_color: 0.12, 0.45, 0.88, 1
-                    on_release: root.go_back()
+                    Label:
+                        id: done_label
+                        text: "Thank You for Playing!"
+                        font_size: "22sp"
+                        bold: True
+                        color: app.theme_text_primary
+                        halign: "center"
+                        valign: "middle"
+                        text_size: self.width, None
+                        size_hint_y: None
+                        height: dp(96) if not done_box.disabled else 0
+                        opacity: 1 if not done_box.disabled else 0
 
-                Button:
-                    id: menu_btn
-                    text: "Main Menu"
-                    size_hint_y: None
-                    height: dp(50)
-                    background_color: 0.12, 0.45, 0.88, 1
-                    on_release: root.go_to_menu()
+                    PrimaryButton:
+                        id: done_back_btn
+                        text: "Play Again"
+                        height: dp(48) if not done_box.disabled else 0
+                        opacity: 1 if not done_box.disabled else 0
+                        on_release: root.go_back()
+
+                    SecondaryButton:
+                        id: menu_btn
+                        text: "Main Menu"
+                        height: dp(48) if not done_box.disabled else 0
+                        opacity: 1 if not done_box.disabled else 0
+                        on_release: root.go_to_menu()
         Footer:

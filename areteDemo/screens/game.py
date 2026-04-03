@@ -23,6 +23,7 @@ class GameScreen(Screen):
             self._game_widget.on_game_over_callback = self._on_game_over
             container.add_widget(self._game_widget)
 
+        self._game_widget.set_active(True)
         # Apply current player color from app
         self._apply_player_color()
 
@@ -58,11 +59,13 @@ class GameScreen(Screen):
         """Pause game when leaving screen."""
         if self._game_widget:
             self._game_widget.is_running = False
+            self._game_widget.set_active(False)
 
     def return_to_menu(self):
         """Return to main menu and clean up game widget."""
         if self._game_widget:
             self._game_widget.is_running = False
+            self._game_widget.dispose()
             try:
                 self.ids.game_container.remove_widget(self._game_widget)
             except Exception:

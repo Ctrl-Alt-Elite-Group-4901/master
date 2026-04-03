@@ -1,5 +1,6 @@
 # areteDemo/screens/reflection.py
 from kivy.uix.screenmanager import Screen
+from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty, ListProperty
 
 # Questions are defined here and also referenced by main.py
@@ -18,6 +19,20 @@ class ReflectionScreen(Screen):
     return_to = StringProperty("main_menu")
     question_index = NumericProperty(0)
     answers = ListProperty([])
+
+    def on_pre_enter(self, *args):
+        self._sync_to_manager()
+        Clock.schedule_once(self._sync_to_manager, 0)
+        return super().on_pre_enter(*args)
+
+    def on_enter(self, *args):
+        self._sync_to_manager()
+        return super().on_enter(*args)
+
+    def _sync_to_manager(self, *_):
+        if self.manager:
+            self.size = self.manager.size
+            self.pos = self.manager.pos
 
     def start_quiz(self):
         self.question_index = 0
