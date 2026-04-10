@@ -54,6 +54,14 @@ class AreteApp(App):
     theme_button_danger = ListProperty([0.82, 0.28, 0.28, 1])
     theme_footer_text = ListProperty([0.33, 0.36, 0.41, 1])
 
+    # Screen-specific background assets for the login and main menu chrome
+    login_background = StringProperty(
+        os.path.join(BASE_DIR, "images", "background_sky.png")
+    )
+    menu_background = StringProperty(
+        os.path.join(BASE_DIR, "images", "background_forest.png")
+    )
+
     # Player color (from old branch) - used by GameScreen to tint the runner
     player_color = ListProperty([1, 1, 1, 1])
 

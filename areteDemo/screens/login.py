@@ -1,9 +1,8 @@
 # areteDemo/screens/login.py
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
 import areteDemo.auth as auth
+from areteDemo.screens.ui_helpers import show_message_popup
 
 
 class Login(Screen):
@@ -32,5 +31,4 @@ class Login(Screen):
         self.manager.current = "register"
 
     def _show_message(self, text):
-        popup = Popup(title="Login", content=Label(text=text), size_hint=(0.7, 0.35))
-        popup.open()
+        show_message_popup("Access Notice", text, size_hint=(0.7, 0.35))

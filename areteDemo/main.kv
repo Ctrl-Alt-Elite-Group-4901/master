@@ -119,170 +119,685 @@
     background_color: app.theme_button_danger
     color: 1, 1, 1, 1
 
+<BiomePanel@BoxLayout>:
+    orientation: "vertical"
+    size_hint: None, None
+    height: self.minimum_size[1]
+    padding: dp(30)
+    spacing: dp(16)
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.46
+        Rectangle:
+            pos: self.x + dp(10), self.y - dp(10)
+            size: self.size
+        Color:
+            rgba: 0.02, 0.03, 0.02, 0.92
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.08, 0.1, 0.09, 0.98
+        Rectangle:
+            pos: self.x + dp(8), self.y + dp(8)
+            size: self.width - dp(16), self.height - dp(16)
+    canvas.after:
+        Color:
+            rgba: 0.77, 1, 0.8, 1
+        Line:
+            width: dp(2)
+            rectangle: (self.x, self.y, self.width, self.height)
+        Rectangle:
+            pos: self.x - dp(2), self.top - dp(10)
+            size: dp(10), dp(10)
+        Rectangle:
+            pos: self.right - dp(8), self.top - dp(10)
+            size: dp(10), dp(10)
+        Rectangle:
+            pos: self.x - dp(2), self.y
+            size: dp(10), dp(10)
+        Rectangle:
+            pos: self.right - dp(8), self.y
+            size: dp(10), dp(10)
+
+<BiomeTextField@TextInput>:
+    size_hint_y: None
+    height: dp(56)
+    multiline: False
+    write_tab: False
+    font_size: "16sp"
+    padding: [dp(16), dp(16), dp(16), dp(16)]
+    background_normal: ""
+    background_active: ""
+    background_color: (0.17, 0.19, 0.18, 0.98) if self.focus else (0.14, 0.16, 0.15, 0.98)
+    foreground_color: 0.93, 0.96, 0.92, 1
+    hint_text_color: 0.64, 0.68, 0.64, 1
+    cursor_color: 0.77, 1, 0.8, 1
+    selection_color: 0.41, 0.85, 1, 0.35
+    canvas.after:
+        Color:
+            rgba: (0.77, 1, 0.8, 1) if self.focus else (0.28, 0.29, 0.26, 1)
+        Line:
+            width: dp(2)
+            rectangle: (self.x, self.y, self.width, self.height)
+
+<BiomePrimaryButton@Button>:
+    size_hint_y: None
+    height: dp(58)
+    font_size: "17sp"
+    bold: True
+    background_normal: ""
+    background_down: ""
+    background_color: 0, 0, 0, 0
+    color: 0.0, 0.29, 0.13, 1
+    text_size: self.width - dp(24), self.height
+    halign: "center"
+    valign: "middle"
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.58
+        Rectangle:
+            pos: self.x + dp(6), self.y - dp(6)
+            size: self.size
+        Color:
+            rgba: (0.43, 0.99, 0.61, 1) if self.state == "down" else (0.77, 1, 0.8, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    canvas.after:
+        Color:
+            rgba: 0.02, 0.04, 0.03, 1
+        Line:
+            width: dp(2)
+            rectangle: (self.x, self.y, self.width, self.height)
+
+<BiomeAccentButton@Button>:
+    size_hint_y: None
+    height: dp(58)
+    font_size: "18sp"
+    bold: True
+    background_normal: ""
+    background_down: ""
+    background_color: 0, 0, 0, 0
+    color: 0.0, 0.19, 0.24, 1
+    text_size: self.width - dp(24), self.height
+    halign: "center"
+    valign: "middle"
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.58
+        Rectangle:
+            pos: self.x + dp(6), self.y - dp(6)
+            size: self.size
+        Color:
+            rgba: (0.0, 0.75, 0.92, 1) if self.state == "down" else (0.41, 0.85, 1, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    canvas.after:
+        Color:
+            rgba: 0.02, 0.04, 0.05, 1
+        Line:
+            width: dp(2)
+            rectangle: (self.x, self.y, self.width, self.height)
+
+<BiomeSecondaryButton@Button>:
+    size_hint_y: None
+    height: dp(54)
+    font_size: "16sp"
+    bold: True
+    background_normal: ""
+    background_down: ""
+    background_color: 0, 0, 0, 0
+    color: (0.77, 1, 0.8, 1) if self.state == "normal" else (0.0, 0.29, 0.13, 1)
+    text_size: self.width - dp(24), self.height
+    halign: "center"
+    valign: "middle"
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.48
+        Rectangle:
+            pos: self.x + dp(5), self.y - dp(5)
+            size: self.size
+        Color:
+            rgba: (0.12, 0.14, 0.13, 0.96) if self.state == "normal" else (0.77, 1, 0.8, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    canvas.after:
+        Color:
+            rgba: 0.28, 0.29, 0.26, 1
+        Line:
+            width: dp(2)
+            rectangle: (self.x, self.y, self.width, self.height)
+
+<BiomeDangerButton@Button>:
+    size_hint_y: None
+    height: dp(54)
+    font_size: "16sp"
+    bold: True
+    background_normal: ""
+    background_down: ""
+    background_color: 0, 0, 0, 0
+    color: 1, 0.94, 0.93, 1
+    text_size: self.width - dp(24), self.height
+    halign: "center"
+    valign: "middle"
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.48
+        Rectangle:
+            pos: self.x + dp(5), self.y - dp(5)
+            size: self.size
+        Color:
+            rgba: (0.7, 0.22, 0.14, 1) if self.state == "down" else (0.9, 0.36, 0.23, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    canvas.after:
+        Color:
+            rgba: 0.22, 0.06, 0.03, 1
+        Line:
+            width: dp(2)
+            rectangle: (self.x, self.y, self.width, self.height)
+
+<BiomePanelTitle@Label>:
+    size_hint_y: None
+    height: self.texture_size[1] + dp(4)
+    font_size: "28sp"
+    bold: True
+    color: 0.89, 0.91, 0.87, 1
+    halign: "left"
+    valign: "middle"
+    text_size: self.width, None
+
+<BiomeBodyLabel@Label>:
+    size_hint_y: None
+    height: self.texture_size[1] + dp(2)
+    font_size: "15sp"
+    color: 0.64, 0.68, 0.64, 1
+    halign: "left"
+    valign: "middle"
+    text_size: self.width, None
+
+<BiomeFieldTag@Label>:
+    size_hint_y: None
+    height: self.texture_size[1]
+    font_size: "12sp"
+    bold: True
+    color: 0.64, 0.68, 0.64, 1
+    halign: "left"
+    valign: "middle"
+    text_size: self.width, None
+
+<BiomeDataLabel@Label>:
+    size_hint_y: None
+    height: max(dp(72), self.texture_size[1] + dp(6))
+    font_size: "15sp"
+    color: 0.89, 0.91, 0.87, 1
+    halign: "left"
+    valign: "top"
+    text_size: self.width, None
+
+<BiomeSwatchButton@Button>:
+    size_hint_y: None
+    height: dp(46)
+    bold: True
+    background_normal: ""
+    background_down: ""
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0.42
+        Rectangle:
+            pos: self.x + dp(4), self.y - dp(4)
+            size: self.size
+    canvas.after:
+        Color:
+            rgba: 0.02, 0.03, 0.02, 1
+        Line:
+            width: dp(2)
+            rectangle: (self.x, self.y, self.width, self.height)
+
 # ===== SCREEN DEFINITIONS =====
 
 <Login>:
     name: "login"
     canvas.before:
         Color:
-            rgba: app.theme_background
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
+            source: app.login_background
+        Color:
+            rgba: 0.04, 0.05, 0.04, 0.76
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.77, 1, 0.8, 0.1
+        Ellipse:
+            pos: self.center_x - self.width * 0.48, self.center_y - self.width * 0.42
+            size: self.width * 0.96, self.width * 0.96
+        Color:
+            rgba: 0.41, 0.85, 1, 0.08
+        Ellipse:
+            pos: self.x + self.width * 0.08, self.top - self.width * 0.4
+            size: self.width * 0.42, self.width * 0.42
+    FloatLayout:
         AnchorLayout:
-            padding: dp(24)
+            padding: dp(24), dp(28), dp(24), dp(24)
             anchor_x: "center"
             anchor_y: "center"
-            ScreenCard:
-                width: min(root.width - dp(48), dp(460))
-                ScreenTitle:
-                    text: "Welcome Back"
-                ScreenBodyText:
-                    text: "Sign in to continue your Arete session."
+            BiomePanel:
+                width: min(root.width - dp(48), dp(520))
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1] + dp(2)
+                    text: "ARETE"
+                    font_size: "56sp"
+                    bold: True
+                    color: 0.77, 1, 0.8, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
                 Widget:
                     size_hint_y: None
-                    height: dp(4)
-                FieldLabel:
-                    text: "Email"
-                FormInput:
+                    height: dp(10)
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1] + dp(2)
+                    text: "WELCOME BACK"
+                    font_size: "29sp"
+                    bold: True
+                    color: 0.89, 0.91, 0.87, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
+                Widget:
+                    size_hint_y: None
+                    height: dp(10)
+                    canvas.before:
+                        Color:
+                            rgba: 0.96, 0.73, 0.57, 1
+                        Rectangle:
+                            pos: self.center_x - dp(36), self.center_y - dp(1)
+                            size: dp(72), dp(2)
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text: "Sign in to continue your Arete session."
+                    font_size: "15sp"
+                    color: 0.64, 0.68, 0.64, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
+                Widget:
+                    size_hint_y: None
+                    height: dp(6)
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text: "IDENTITY TAG (EMAIL)"
+                    font_size: "12sp"
+                    bold: True
+                    color: 0.64, 0.68, 0.64, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.width, None
+                BiomeTextField:
                     id: email
-                    hint_text: "name@example.com"
-                FieldLabel:
-                    text: "Password"
-                FormInput:
+                    hint_text: "explorer@arete.world"
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text: "ACCESS KEY (PASSWORD)"
+                    font_size: "12sp"
+                    bold: True
+                    color: 0.64, 0.68, 0.64, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.width, None
+                BiomeTextField:
                     id: password
-                    hint_text: "Password"
+                    hint_text: "Enter your password"
                     password: True
                 Widget:
                     size_hint_y: None
-                    height: dp(4)
-                PrimaryButton:
-                    text: "Login"
+                    height: dp(6)
+                BiomePrimaryButton:
+                    text: "INITIALIZE SESSION"
                     on_release: root.login_user()
-                SecondaryButton:
-                    text: "Create an Account"
+                BiomeSecondaryButton:
+                    text: "CREATE AN ACCOUNT"
                     on_release: root.go_to_signup()
-        Footer:
 
 <Register>:
     name: "register"
     canvas.before:
         Color:
-            rgba: app.theme_background
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
+            source: app.login_background
+        Color:
+            rgba: 0.04, 0.05, 0.04, 0.78
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.41, 0.85, 1, 0.08
+        Ellipse:
+            pos: self.center_x - self.width * 0.5, self.center_y - self.width * 0.48
+            size: self.width * 1.0, self.width * 1.0
+    FloatLayout:
         AnchorLayout:
-            padding: dp(24)
+            padding: dp(24), dp(28), dp(24), dp(24)
             anchor_x: "center"
             anchor_y: "center"
-            ScreenCard:
-                width: min(root.width - dp(48), dp(520))
-                ScreenTitle:
-                    text: "Create Account"
-                ScreenBodyText:
+            BiomePanel:
+                width: min(root.width - dp(48), dp(560))
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1] + dp(2)
+                    text: "ARETE"
+                    font_size: "54sp"
+                    bold: True
+                    color: 0.77, 1, 0.8, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text: "NEW EXPLORER REGISTRATION"
+                    font_size: "13sp"
+                    bold: True
+                    color: 0.41, 0.85, 1, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
+                Widget:
+                    size_hint_y: None
+                    height: dp(8)
+                BiomePanelTitle:
+                    text: "CREATE ACCOUNT"
+                    halign: "center"
+                    text_size: self.width, None
+                BiomeBodyLabel:
                     text: "Set up your profile so you can jump straight into the experience."
+                    halign: "center"
+                    text_size: self.width, None
                 Widget:
                     size_hint_y: None
                     height: dp(4)
-                FieldLabel:
-                    text: "First Name"
-                FormInput:
-                    id: first_name
-                    hint_text: "First name"
-                FieldLabel:
-                    text: "Last Name"
-                FormInput:
-                    id: last_name
-                    hint_text: "Last name"
-                FieldLabel:
-                    text: "Email"
-                FormInput:
+                GridLayout:
+                    cols: 2 if self.width > dp(460) else 1
+                    size_hint_y: None
+                    height: self.minimum_size[1]
+                    spacing: dp(12)
+                    BoxLayout:
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: self.minimum_size[1]
+                        spacing: dp(6)
+                        BiomeFieldTag:
+                            text: "FIRST NAME"
+                        BiomeTextField:
+                            id: first_name
+                            hint_text: "First name"
+                    BoxLayout:
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: self.minimum_size[1]
+                        spacing: dp(6)
+                        BiomeFieldTag:
+                            text: "LAST NAME"
+                        BiomeTextField:
+                            id: last_name
+                            hint_text: "Last name"
+                BiomeFieldTag:
+                    text: "EMAIL"
+                BiomeTextField:
                     id: email
-                    hint_text: "name@example.com"
-                FieldLabel:
-                    text: "Password"
-                FormInput:
+                    hint_text: "explorer@arete.world"
+                BiomeFieldTag:
+                    text: "PASSWORD"
+                BiomeTextField:
                     id: password
                     hint_text: "Choose a password"
                     password: True
                 Widget:
                     size_hint_y: None
-                    height: dp(4)
-                PrimaryButton:
-                    text: "Create Account"
+                    height: dp(6)
+                BiomePrimaryButton:
+                    text: "CREATE ACCOUNT"
                     on_release: root.signup_user()
-                SecondaryButton:
-                    text: "Back to Login"
+                BiomeSecondaryButton:
+                    text: "BACK TO LOGIN"
                     on_release: root.go_to_login()
-        Footer:
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: None, None
+            width: dp(240)
+            height: self.minimum_size[1]
+            pos_hint: {"right": 0.97, "y": 0.05}
+            spacing: dp(2)
+            Label:
+                size_hint_y: None
+                height: self.texture_size[1]
+                text: "IDENTITY LINK OPEN"
+                font_size: "13sp"
+                bold: True
+                color: 0.96, 0.73, 0.57, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.width, None
+            Label:
+                size_hint_y: None
+                height: self.texture_size[1]
+                text: "CREATE YOUR ARETE ACCESS NODE"
+                font_size: "11sp"
+                color: 0.64, 0.68, 0.64, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.width, None
 
 <MainMenu>:
     name: "main_menu"
     canvas.before:
         Color:
-            rgba: app.theme_background
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
+            source: app.menu_background
+        Color:
+            rgba: 0.04, 0.05, 0.04, 0.74
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.77, 1, 0.8, 0.08
+        Ellipse:
+            pos: self.center_x - self.width * 0.5, self.center_y - self.width * 0.45
+            size: self.width * 1.0, self.width * 1.0
+        Color:
+            rgba: 0.96, 0.73, 0.57, 0.08
+        Ellipse:
+            pos: self.right - self.width * 0.36, self.y + self.height * 0.08
+            size: self.width * 0.34, self.width * 0.34
+    FloatLayout:
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.02, 0.03, 0.02, 0.9
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 0.77, 1, 0.8, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 0.77, 1, 0.8, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "MAIN MENU"
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "SESSION ACTIVE"
+                font_size: "13sp"
+                bold: True
+                color: 0.96, 0.73, 0.57, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
         AnchorLayout:
-            padding: dp(24)
+            padding: dp(24), dp(92), dp(24), dp(92)
             anchor_x: "center"
             anchor_y: "center"
-            ScreenCard:
-                width: min(root.width - dp(48), dp(520))
-                ScreenTitle:
-                    text: "Main Menu"
-                ScreenBodyText:
+            BiomePanel:
+                width: min(root.width - dp(48), dp(560))
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1] + dp(2)
+                    text: "ARETE"
+                    font_size: "72sp"
+                    bold: True
+                    color: 0.77, 1, 0.8, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text: "MAIN MENU"
+                    font_size: "14sp"
+                    bold: True
+                    color: 0.96, 0.73, 0.57, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
                     text: "Choose where you want to go next."
+                    font_size: "15sp"
+                    color: 0.64, 0.68, 0.64, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width, None
+                Widget:
+                    size_hint_y: None
+                    height: dp(10)
+                BiomeAccentButton:
+                    text: "PLAY GAME"
+                    on_release: root.go_to_game()
+                BiomeSecondaryButton:
+                    text: "PROFILE"
+                    on_release: root.go_to_profile()
+                BiomeSecondaryButton:
+                    text: "SETTINGS"
+                    on_release: root.manager.current = "settings"
+                BiomeSecondaryButton:
+                    text: "HELP"
+                    on_release: root.manager.current = "help"
                 Widget:
                     size_hint_y: None
                     height: dp(4)
-                PrimaryButton:
-                    text: "Play Game"
-                    on_release: root.go_to_game()
-                SecondaryButton:
-                    text: "Profile"
-                    on_release: root.go_to_profile()
-                SecondaryButton:
-                    text: "Settings"
-                    on_release: root.manager.current = "settings"
-                SecondaryButton:
-                    text: "Help"
-                    on_release: root.manager.current = "help"
-                DangerButton:
-                    text: "Logout"
+                BiomeDangerButton:
+                    text: "LOGOUT"
                     on_release: root.logout()
-        Footer:
 
 <Profile>:
     name: "profile"
     canvas.before:
         Color:
-            rgba: app.theme_background
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
+            source: app.menu_background
+        Color:
+            rgba: 0.04, 0.05, 0.04, 0.76
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.77, 1, 0.8, 0.07
+        Ellipse:
+            pos: self.center_x - self.width * 0.5, self.center_y - self.width * 0.45
+            size: self.width * 1.0, self.width * 1.0
+    FloatLayout:
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.02, 0.03, 0.02, 0.9
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 0.77, 1, 0.8, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 0.77, 1, 0.8, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "PROFILE"
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "SESSION ACTIVE"
+                font_size: "13sp"
+                bold: True
+                color: 0.96, 0.73, 0.57, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
         ScrollView:
+            size_hint: 1, 1
+            pos_hint: {"x": 0, "y": 0}
             do_scroll_x: False
             bar_width: dp(8)
             GridLayout:
                 cols: 1
                 size_hint_y: None
                 height: self.minimum_size[1]
-                padding: dp(24)
+                padding: dp(24), dp(104), dp(24), dp(24)
                 spacing: dp(20)
 
                 AnchorLayout:
@@ -290,12 +805,12 @@
                     height: account_card.height
                     anchor_x: "center"
                     anchor_y: "top"
-                    ScreenCard:
+                    BiomePanel:
                         id: account_card
-                        width: min(root.width - dp(48), dp(760))
-                        ScreenTitle:
+                        width: min(root.width - dp(48), dp(820))
+                        BiomePanelTitle:
                             text: "Profile"
-                        ScreenBodyText:
+                        BiomeBodyLabel:
                             text: "Manage your account details and keep your information up to date."
                         Widget:
                             size_hint_y: None
@@ -310,9 +825,9 @@
                                 size_hint_y: None
                                 height: self.minimum_size[1]
                                 spacing: dp(6)
-                                FieldLabel:
-                                    text: "First Name"
-                                FormInput:
+                                BiomeFieldTag:
+                                    text: "FIRST NAME"
+                                BiomeTextField:
                                     id: first_name
                                     hint_text: "First name"
                             BoxLayout:
@@ -320,9 +835,9 @@
                                 size_hint_y: None
                                 height: self.minimum_size[1]
                                 spacing: dp(6)
-                                FieldLabel:
-                                    text: "Last Name"
-                                FormInput:
+                                BiomeFieldTag:
+                                    text: "LAST NAME"
+                                BiomeTextField:
                                     id: last_name
                                     hint_text: "Last name"
                         BoxLayout:
@@ -330,24 +845,24 @@
                             size_hint_y: None
                             height: self.minimum_size[1]
                             spacing: dp(6)
-                            FieldLabel:
-                                text: "Email"
-                            FormInput:
+                            BiomeFieldTag:
+                                text: "EMAIL"
+                            BiomeTextField:
                                 id: email
-                                hint_text: "name@example.com"
+                                hint_text: "explorer@arete.world"
                         GridLayout:
                             cols: 2 if self.width > dp(560) else 1
                             size_hint_y: None
                             height: self.minimum_size[1]
                             spacing: dp(12)
-                            PrimaryButton:
-                                text: "Save Changes"
+                            BiomePrimaryButton:
+                                text: "SAVE CHANGES"
                                 on_release: root.save_profile()
-                            SecondaryButton:
-                                text: "Go to Settings"
+                            BiomeSecondaryButton:
+                                text: "GO TO SETTINGS"
                                 on_release: root.go_to_settings()
-                        SecondaryButton:
-                            text: "Back to Menu"
+                        BiomeSecondaryButton:
+                            text: "BACK TO MENU"
                             on_release: root.manager.current = "main_menu"
 
                 AnchorLayout:
@@ -355,114 +870,136 @@
                     height: progress_card.height
                     anchor_x: "center"
                     anchor_y: "top"
-                    ScreenCard:
+                    BiomePanel:
                         id: progress_card
-                        width: min(root.width - dp(48), dp(760))
-                        ScreenTitle:
+                        width: min(root.width - dp(48), dp(820))
+                        BiomePanelTitle:
                             text: "Progress and Style"
-                        ScreenBodyText:
+                        BiomeBodyLabel:
                             text: "Review your recent scores and pick the runner color you want to use in game."
                         Widget:
                             size_hint_y: None
                             height: dp(2)
-                        FieldLabel:
-                            text: "Leaderboard"
-                        Label:
+                        BiomeFieldTag:
+                            text: "LEADERBOARD"
+                        BiomeDataLabel:
                             id: scores_table
                             text: "Loading scores..."
-                            size_hint_y: None
-                            height: max(dp(140), self.texture_size[1] + dp(20))
-                            font_size: "16sp"
-                            color: app.theme_text_primary
-                            halign: "left"
-                            valign: "top"
-                            text_size: self.width, None
-                        FieldLabel:
-                            text: "Choose Character Color"
+                            height: max(dp(140), self.texture_size[1] + dp(12))
+                        BiomeFieldTag:
+                            text: "CHOOSE CHARACTER COLOR"
                         GridLayout:
                             cols: 4 if self.width > dp(560) else 2
                             size_hint_y: None
                             height: self.minimum_size[1]
                             spacing: dp(10)
-                            Button:
+                            BiomeSwatchButton:
                                 text: "White"
-                                size_hint_y: None
-                                height: dp(46)
-                                bold: True
-                                background_normal: ""
-                                background_down: ""
                                 background_color: 0.88, 0.88, 0.9, 1
                                 color: 0.08, 0.08, 0.08, 1
                                 on_release: app.player_color = [1, 1, 1, 1]
-                            Button:
+                            BiomeSwatchButton:
                                 text: "Red"
-                                size_hint_y: None
-                                height: dp(46)
-                                bold: True
-                                background_normal: ""
-                                background_down: ""
                                 background_color: 0.93, 0.36, 0.36, 1
                                 color: 1, 1, 1, 1
                                 on_release: app.player_color = [1, 0.3, 0.3, 1]
-                            Button:
+                            BiomeSwatchButton:
                                 text: "Blue"
-                                size_hint_y: None
-                                height: dp(46)
-                                bold: True
-                                background_normal: ""
-                                background_down: ""
                                 background_color: 0.32, 0.52, 0.95, 1
                                 color: 1, 1, 1, 1
                                 on_release: app.player_color = [0.3, 0.5, 1, 1]
-                            Button:
+                            BiomeSwatchButton:
                                 text: "Green"
-                                size_hint_y: None
-                                height: dp(46)
-                                bold: True
-                                background_normal: ""
-                                background_down: ""
                                 background_color: 0.36, 0.78, 0.39, 1
                                 color: 1, 1, 1, 1
                                 on_release: app.player_color = [0.3, 1, 0.3, 1]
-        Footer:
 
 <Settings>:
     name: "settings"
     canvas.before:
         Color:
-            rgba: app.theme_background
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
+            source: app.menu_background
+        Color:
+            rgba: 0.04, 0.05, 0.04, 0.76
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.41, 0.85, 1, 0.07
+        Ellipse:
+            pos: self.center_x - self.width * 0.46, self.center_y - self.width * 0.42
+            size: self.width * 0.92, self.width * 0.92
+    FloatLayout:
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.02, 0.03, 0.02, 0.9
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 0.77, 1, 0.8, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 0.77, 1, 0.8, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "SETTINGS"
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "CONTROL PANEL"
+                font_size: "13sp"
+                bold: True
+                color: 0.96, 0.73, 0.57, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
         AnchorLayout:
-            padding: dp(24)
+            padding: dp(24), dp(92), dp(24), dp(24)
             anchor_x: "center"
             anchor_y: "center"
-            ScreenCard:
+            BiomePanel:
                 width: min(root.width - dp(48), dp(560))
-                ScreenTitle:
+                BiomePanelTitle:
                     text: "Settings"
-                ScreenBodyText:
+                BiomeBodyLabel:
                     text: "Adjust the visual theme and manage account actions from one place."
                 Widget:
                     size_hint_y: None
                     height: dp(4)
-                SecondaryButton:
-                    text: "Toggle Light/Dark Mode"
+                BiomeSecondaryButton:
+                    text: "TOGGLE LIGHT / DARK MODE"
                     on_release: root.toggle_theme()
-                SecondaryButton:
-                    text: "Change Password"
+                BiomePrimaryButton:
+                    text: "CHANGE PASSWORD"
                     on_release: root.show_change_password_dialog()
-                DangerButton:
-                    text: "Delete Account"
+                BiomeDangerButton:
+                    text: "DELETE ACCOUNT"
                     on_release: root.show_delete_account_dialog()
-                SecondaryButton:
-                    text: "Back to Menu"
+                BiomeSecondaryButton:
+                    text: "BACK TO MENU"
                     on_release: root.manager.current = "main_menu"
-        Footer:
 
 <GameScreen>:
     name: "game"
@@ -475,153 +1012,243 @@
     name: "help"
     canvas.before:
         Color:
-            rgba: app.theme_background
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
+            source: app.menu_background
+        Color:
+            rgba: 0.04, 0.05, 0.04, 0.76
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    FloatLayout:
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.02, 0.03, 0.02, 0.9
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 0.77, 1, 0.8, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 0.77, 1, 0.8, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "HELP"
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "RUN GUIDE"
+                font_size: "13sp"
+                bold: True
+                color: 0.96, 0.73, 0.57, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
         AnchorLayout:
-            padding: dp(24)
+            padding: dp(24), dp(92), dp(24), dp(24)
             anchor_x: "center"
             anchor_y: "center"
-            ScreenCard:
+            BiomePanel:
                 width: min(root.width - dp(48), dp(680))
-                ScreenTitle:
+                BiomePanelTitle:
                     text: "Help"
-                ScreenBodyText:
+                BiomeBodyLabel:
                     text: "Use SPACE or ENTER to start the game and jump. Avoid the red obstacles, survive for 5 minutes, and then complete the reflection questions."
                 Widget:
                     size_hint_y: None
+                    height: dp(2)
+                BiomeFieldTag:
+                    text: "QUICK START"
+                BiomeDataLabel:
+                    text: "1. Start your run from the main menu.\n2. Press SPACE or ENTER to jump.\n3. Dodge obstacles and survive long enough to unlock reflection.\n4. Finish the reflection quiz to complete the cycle."
+                Widget:
+                    size_hint_y: None
                     height: dp(4)
-                SecondaryButton:
-                    text: "About"
+                BiomeSecondaryButton:
+                    text: "ABOUT"
                     on_release: root.show_about()
-                SecondaryButton:
-                    text: "Back to Menu"
+                BiomeSecondaryButton:
+                    text: "BACK TO MENU"
                     on_release: root.manager.current = "main_menu"
-        Footer:
 
 # ===== REFLECTION SCREEN =====
 <ReflectionScreen>:
     name: "reflection"
     canvas.before:
         Color:
-            rgba: app.theme_background
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    BoxLayout:
-        orientation: "vertical"
-        Header:
+            source: app.menu_background
+        Color:
+            rgba: 0.04, 0.05, 0.04, 0.78
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.41, 0.85, 1, 0.06
+        Ellipse:
+            pos: self.center_x - self.width * 0.48, self.center_y - self.width * 0.44
+            size: self.width * 0.96, self.width * 0.96
+    FloatLayout:
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.02, 0.03, 0.02, 0.9
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 0.77, 1, 0.8, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 0.77, 1, 0.8, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "REFLECTION"
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "MEMORY CHECK"
+                font_size: "13sp"
+                bold: True
+                color: 0.96, 0.73, 0.57, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
         AnchorLayout:
-            padding: dp(24)
+            padding: dp(24), dp(92), dp(24), dp(24)
             anchor_x: "center"
             anchor_y: "center"
-            ScreenCard:
+            BiomePanel:
                 width: min(root.width - dp(48), dp(760))
+                BiomePanelTitle:
+                    text: "Reflection Quiz"
+                BiomeBodyLabel:
+                    text: "Recall what you noticed during the run and complete the cycle."
+                Widget:
+                    size_hint_y: None
+                    height: dp(2)
                 BoxLayout:
                     id: quiz_box
                     orientation: "vertical"
                     size_hint_y: None
-                    height: dp(318) if not self.disabled else 0
+                    height: self.minimum_size[1] if not self.disabled else 0
                     spacing: dp(14)
+                    opacity: 1 if not self.disabled else 0
 
-                    Label:
+                    BiomeFieldTag:
                         id: quiz_title
-                        text: "Reflection"
-                        font_size: "24sp"
-                        bold: True
-                        color: app.theme_text_primary
-                        size_hint_y: None
-                        height: dp(40) if not quiz_box.disabled else 0
+                        text: "REFLECTION"
+                        height: self.texture_size[1] if not quiz_box.disabled else 0
                         opacity: 1 if not quiz_box.disabled else 0
-                        halign: "left"
-                        valign: "middle"
-                        text_size: self.width, None
 
-                    Label:
+                    BiomeBodyLabel:
                         id: progress_label
                         text: ""
-                        font_size: "16sp"
-                        color: app.theme_text_muted
-                        size_hint_y: None
-                        height: dp(28) if not quiz_box.disabled else 0
+                        height: self.texture_size[1] + dp(2) if not quiz_box.disabled else 0
                         opacity: 1 if not quiz_box.disabled else 0
-                        halign: "left"
-                        text_size: self.width, None
 
-                    Label:
+                    BiomePanelTitle:
                         id: question_label
                         text: ""
-                        font_size: "20sp"
-                        bold: True
-                        color: app.theme_text_primary
-                        text_size: self.width, None
-                        halign: "left"
-                        valign: "middle"
-                        size_hint_y: None
-                        height: dp(88) if not quiz_box.disabled else 0
+                        font_size: "24sp"
+                        height: max(dp(92), self.texture_size[1] + dp(4)) if not quiz_box.disabled else 0
                         opacity: 1 if not quiz_box.disabled else 0
 
                     GridLayout:
                         id: choices_grid
-                        cols: 2
+                        cols: 2 if self.width > dp(520) else 1
                         spacing: dp(12)
                         size_hint_y: None
-                        height: dp(120) if not quiz_box.disabled else 0
+                        height: self.minimum_size[1] if not quiz_box.disabled else 0
                         opacity: 1 if not quiz_box.disabled else 0
-                        PrimaryButton:
+                        BiomeSecondaryButton:
                             id: choice_0
                             text: ""
+                            height: dp(56)
                             on_release: root.on_choice(0)
-                        PrimaryButton:
+                        BiomeSecondaryButton:
                             id: choice_1
                             text: ""
+                            height: dp(56)
                             on_release: root.on_choice(1)
-                        PrimaryButton:
+                        BiomeSecondaryButton:
                             id: choice_2
                             text: ""
+                            height: dp(56)
                             on_release: root.on_choice(2)
-                        PrimaryButton:
+                        BiomeSecondaryButton:
                             id: choice_3
                             text: ""
+                            height: dp(56)
                             on_release: root.on_choice(3)
 
                 BoxLayout:
                     id: done_box
                     orientation: "vertical"
                     size_hint_y: None
-                    height: dp(232) if not self.disabled else 0
-                    spacing: dp(20)
+                    height: self.minimum_size[1] if not self.disabled else 0
+                    spacing: dp(16)
                     opacity: 0
                     disabled: True
 
-                    Label:
+                    BiomePanelTitle:
                         id: done_label
                         text: "Thank You for Playing!"
-                        font_size: "22sp"
-                        bold: True
-                        color: app.theme_text_primary
+                        font_size: "24sp"
                         halign: "center"
-                        valign: "middle"
                         text_size: self.width, None
-                        size_hint_y: None
-                        height: dp(96) if not done_box.disabled else 0
+                        height: max(dp(96), self.texture_size[1] + dp(8)) if not done_box.disabled else 0
                         opacity: 1 if not done_box.disabled else 0
 
-                    PrimaryButton:
+                    BiomePrimaryButton:
                         id: done_back_btn
                         text: "Play Again"
-                        height: dp(48) if not done_box.disabled else 0
+                        height: dp(56) if not done_box.disabled else 0
                         opacity: 1 if not done_box.disabled else 0
                         on_release: root.go_back()
 
-                    SecondaryButton:
+                    BiomeSecondaryButton:
                         id: menu_btn
                         text: "Main Menu"
-                        height: dp(48) if not done_box.disabled else 0
+                        height: dp(54) if not done_box.disabled else 0
                         opacity: 1 if not done_box.disabled else 0
                         on_release: root.go_to_menu()
-        Footer:

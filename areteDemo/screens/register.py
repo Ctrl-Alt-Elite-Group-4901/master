@@ -1,10 +1,9 @@
 # areteDemo/screens/register.py
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
 import areteDemo.auth as auth
 import sqlite3
+from areteDemo.screens.ui_helpers import show_message_popup
 
 
 class Register(Screen):
@@ -33,5 +32,4 @@ class Register(Screen):
         self.manager.current = "login"
 
     def _show_message(self, text):
-        popup = Popup(title="Sign Up", content=Label(text=text), size_hint=(0.7, 0.35))
-        popup.open()
+        show_message_popup("Registration Notice", text, size_hint=(0.7, 0.35))

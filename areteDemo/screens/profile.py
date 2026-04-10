@@ -1,10 +1,9 @@
 # areteDemo/screens/profile.py
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
 import areteDemo.auth as auth
 import sqlite3
+from areteDemo.screens.ui_helpers import show_message_popup
 
 
 class Profile(Screen):
@@ -28,12 +27,12 @@ class Profile(Screen):
         app = App.get_running_app()
         scores = auth.get_user_scores(app.user_id, limit=5)
         if "scores_table" in self.ids:
-            scores_text = "Top 5 Scores:\n" + "-" * 30 + "\n"
             if scores:
+                scores_text = ""
                 for i, score in enumerate(scores, 1):
-                    scores_text += f"{i}. Score: {score['score']}\n"
+                    scores_text += f"{i}. SCORE {score['score']}\n"
             else:
-                scores_text += "No scores yet. Play a game!"
+                scores_text = "No scores yet. Play a game to populate your record."
             self.ids.scores_table.text = scores_text
 
     def save_profile(self):
@@ -61,5 +60,4 @@ class Profile(Screen):
         self.manager.current = "settings"
 
     def _show_message(self, text):
-        popup = Popup(title="Profile", content=Label(text=text), size_hint=(0.7, 0.35))
-        popup.open()
+        show_message_popup("Profile Notice", text, size_hint=(0.7, 0.35))
