@@ -27,12 +27,12 @@ PLAYER_X_RATIO = PLAYER_X / WINDOW_WIDTH
 
 # BASE_FLOOR_RATIO = 0.15
 
-PLAYER_RADIUS = 30
+PLAYER_RADIUS = 40
 GRAVITY = -1200  # pixels per second^2 (negative = pulls down)
 JUMP_VELOCITY = 700  # initial jump velocity - tuned for feel
 
 INITIAL_SPEED = 260  # pixels/second (how fast obstacles move left)
-SPEED_INCREASE_PER_5_AVOIDED = 20  # speed increases incrementally for every 5 obstacles avoided
+SPEED_INCREASE_PER_5_AVOIDED = 100  # speed increases incrementally for every 5 obstacles avoided
 OBSTACLE_MIN_GAP = 350
 OBSTACLE_MAX_GAP = 900
 SPAWN_INTERVAL_BASE = 2.0  # base interval between obstacles (sec) - modified by speed
