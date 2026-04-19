@@ -8,19 +8,28 @@ from areteDemo.screens.ui_helpers import show_message_popup
 class Login(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
-        if app.user_id:
+        if app.user_id or app.is_dev_mode:
             self.manager.current = "main_menu"
 
     def login_user(self):
         email = self.ids.get("email").text.strip()
         password = self.ids.get("password").text
-        if not email or not password:
+
+        # Allow blank email only for dev login; normal users always need one
+        if not email and password != "BobRoss5":
             self._show_message("Please enter email and password.")
             return
-        uid = auth.validate_login(email, password)
-        if uid:
+
+        result = auth.validate_login(email, password)
+
+        if result == "dev":
             app = App.get_running_app()
-            app.user_id = uid
+            app.is_dev_mode = True
+            # user_id intentionally left None — dev has no DB account
+            self.manager.current = "main_menu"
+        elif result:
+            app = App.get_running_app()
+            app.user_id = result
             self.manager.current = "main_menu"
         else:
             self._show_message("Invalid credentials.")

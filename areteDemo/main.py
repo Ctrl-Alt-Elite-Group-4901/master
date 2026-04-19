@@ -12,7 +12,7 @@ Config.set("graphics", "resizable", "0")
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, FadeTransition
-from kivy.properties import ListProperty, NumericProperty, StringProperty
+from kivy.properties import ListProperty, NumericProperty, StringProperty, BooleanProperty
 from kivy.core.window import Window
 
 BASE_DIR = os.path.dirname(__file__)
@@ -26,6 +26,8 @@ from areteDemo.screens.settings import Settings
 from areteDemo.screens.game import GameScreen
 from areteDemo.screens.help import HelpScreen
 from areteDemo.screens.reflection import ReflectionScreen
+from areteDemo.screens.editor_menu import EditorMenu
+from areteDemo.screens.editor_page import EditorPage
 
 REFLECTION_QUESTIONS = [
     {"text": "How many clusters of purple seaweed were in the background?", "choices": ["2", "3", "1", "4"], "correct": 3},
@@ -42,6 +44,9 @@ class AreteApp(App):
     title = "Arete App"
     user_id = None
 
+    # Developer mode flag — set True when dev credentials are used at login
+    is_dev_mode = BooleanProperty(False)
+
     # Theme properties
     theme_header = ListProperty([0.12, 0.45, 0.88, 1])
     theme_footer = ListProperty([0.95, 0.95, 0.95, 1])
@@ -54,7 +59,6 @@ class AreteApp(App):
     theme_button_danger = ListProperty([0.82, 0.28, 0.28, 1])
     theme_footer_text = ListProperty([0.33, 0.36, 0.41, 1])
 
-    # Screen-specific background assets for the login and main menu chrome
     login_background = StringProperty(
         os.path.join(BASE_DIR, "images", "background_sky.png")
     )
@@ -62,7 +66,6 @@ class AreteApp(App):
         os.path.join(BASE_DIR, "images", "background_forest.png")
     )
 
-    # Player color (from old branch) - used by GameScreen to tint the runner
     player_color = ListProperty([1, 1, 1, 1])
 
     @staticmethod
@@ -85,6 +88,12 @@ class AreteApp(App):
         sm.add_widget(GameScreen(name="game"))
         sm.add_widget(HelpScreen(name="help"))
         sm.add_widget(ReflectionScreen(name="reflection"))
+        sm.add_widget(EditorMenu(name="editor_menu"))
+        # Four placeholder editor pages — team fills each one in later
+        sm.add_widget(EditorPage(name="editor_page_1", page_title="Editor Page 1"))
+        sm.add_widget(EditorPage(name="editor_page_2", page_title="Editor Page 2"))
+        sm.add_widget(EditorPage(name="editor_page_3", page_title="Editor Page 3"))
+        sm.add_widget(EditorPage(name="editor_page_4", page_title="Editor Page 4"))
         return sm
 
     def on_start(self):

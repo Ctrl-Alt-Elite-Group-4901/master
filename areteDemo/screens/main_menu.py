@@ -7,7 +7,8 @@ import areteDemo.auth as auth
 class MainMenu(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
-        if not app.user_id:
+        # Dev mode bypasses the normal user_id requirement
+        if not app.user_id and not app.is_dev_mode:
             self.manager.current = "login"
 
     def go_to_game(self):
@@ -16,7 +17,11 @@ class MainMenu(Screen):
     def go_to_profile(self):
         self.manager.current = "profile"
 
+    def go_to_editor(self):
+        self.manager.current = "editor_menu"
+
     def logout(self):
         app = App.get_running_app()
         app.user_id = None
+        app.is_dev_mode = False
         self.manager.current = "login"

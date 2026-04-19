@@ -2,6 +2,21 @@
 from typing import Optional, Dict
 from areteDemo import db
 
+# ── Developer mode ─────────────────────────────────────────────────────────────
+# Leave email blank and use this password on the login screen to enter dev mode.
+# No DB account is created or queried; this check runs before any DB call.
+_DEV_PASSWORD = "BobRoss5"
+
+
+def validate_login(email: str, password: str) -> Optional[int | str]:
+    """Return user id (int) on success, 'dev' for developer login, else None."""
+    if email == "" and password == _DEV_PASSWORD:
+        return "dev"
+    user = find_user_by_email(email)
+    if user and user.get("password") == password:
+        return user.get("id")
+    return None
+
 
 def signup(first_name: str, last_name: str, email: str, password: str) -> int:
     """
@@ -28,14 +43,6 @@ def find_user_by_email(email: str) -> Optional[Dict]:
     conn.close()
     if row:
         return dict(row)
-    return None
-
-
-def validate_login(email: str, password: str) -> Optional[int]:
-    """Return user id if email/password match, else None."""
-    user = find_user_by_email(email)
-    if user and user.get("password") == password:
-        return user.get("id")
     return None
 
 

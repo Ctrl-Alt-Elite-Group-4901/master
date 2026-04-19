@@ -1252,3 +1252,259 @@
                         height: dp(54) if not done_box.disabled else 0
                         opacity: 1 if not done_box.disabled else 0
                         on_release: root.go_to_menu()
+
+# ===== EDITOR MENU SCREEN (DEV MODE ONLY) =====
+<EditorMenu>:
+    name: "editor_menu"
+    canvas.before:
+        # Dark charcoal base — visually distinct from normal user screens
+        Color:
+            rgba: 0.07, 0.07, 0.09, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        # Amber glow ellipse — dev accent color
+        Color:
+            rgba: 1, 0.72, 0.1, 0.07
+        Ellipse:
+            pos: self.center_x - self.width * 0.5, self.center_y - self.width * 0.45
+            size: self.width * 1.0, self.width * 1.0
+    FloatLayout:
+        # ── Top bar ──────────────────────────────────────────────────────
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.10, 0.09, 0.06, 0.96
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 1, 0.72, 0.1, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 1, 0.72, 0.1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "EDITOR"
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "⚙  DEV MODE"
+                font_size: "13sp"
+                bold: True
+                color: 1, 0.72, 0.1, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
+        # ── Content panel ────────────────────────────────────────────────
+        AnchorLayout:
+            padding: dp(24), dp(92), dp(24), dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            BiomePanel:
+                width: min(root.width - dp(48), dp(560))
+                BiomePanelTitle:
+                    text: "Editor Hub"
+                    color: 1, 0.72, 0.1, 1
+                BiomeBodyLabel:
+                    text: "Select a page to open. These pages are only visible in dev mode."
+                Widget:
+                    size_hint_y: None
+                    height: dp(8)
+                BiomePrimaryButton:
+                    text: "EDITOR PAGE 1"
+                    canvas.before:
+                        Color:
+                            rgba: 0, 0, 0, 0.58
+                        Rectangle:
+                            pos: self.x + dp(6), self.y - dp(6)
+                            size: self.size
+                        Color:
+                            rgba: (0.85, 0.55, 0.0, 1) if self.state == "down" else (1, 0.72, 0.1, 1)
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    on_release: root.go_to_page(1)
+                BiomePrimaryButton:
+                    text: "EDITOR PAGE 2"
+                    canvas.before:
+                        Color:
+                            rgba: 0, 0, 0, 0.58
+                        Rectangle:
+                            pos: self.x + dp(6), self.y - dp(6)
+                            size: self.size
+                        Color:
+                            rgba: (0.85, 0.55, 0.0, 1) if self.state == "down" else (1, 0.72, 0.1, 1)
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    on_release: root.go_to_page(2)
+                BiomePrimaryButton:
+                    text: "EDITOR PAGE 3"
+                    canvas.before:
+                        Color:
+                            rgba: 0, 0, 0, 0.58
+                        Rectangle:
+                            pos: self.x + dp(6), self.y - dp(6)
+                            size: self.size
+                        Color:
+                            rgba: (0.85, 0.55, 0.0, 1) if self.state == "down" else (1, 0.72, 0.1, 1)
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    on_release: root.go_to_page(3)
+                BiomePrimaryButton:
+                    text: "EDITOR PAGE 4"
+                    canvas.before:
+                        Color:
+                            rgba: 0, 0, 0, 0.58
+                        Rectangle:
+                            pos: self.x + dp(6), self.y - dp(6)
+                            size: self.size
+                        Color:
+                            rgba: (0.85, 0.55, 0.0, 1) if self.state == "down" else (1, 0.72, 0.1, 1)
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    on_release: root.go_to_page(4)
+                Widget:
+                    size_hint_y: None
+                    height: dp(4)
+                BiomeSecondaryButton:
+                    text: "BACK TO MENU"
+                    on_release: root.go_back()
+
+# ===== EDITOR PAGE SCREEN (DEV MODE ONLY) =====
+<EditorPage>:
+    canvas.before:
+        Color:
+            rgba: 0.07, 0.07, 0.09, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 0.72, 0.1, 0.05
+        Ellipse:
+            pos: self.center_x - self.width * 0.48, self.center_y - self.width * 0.44
+            size: self.width * 0.96, self.width * 0.96
+    FloatLayout:
+        # ── Top bar ──────────────────────────────────────────────────────
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.10, 0.09, 0.06, 0.96
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 1, 0.72, 0.1, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 1, 0.72, 0.1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: root.page_title.upper()
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "⚙  DEV MODE"
+                font_size: "13sp"
+                bold: True
+                color: 1, 0.72, 0.1, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
+        # ── Placeholder content ──────────────────────────────────────────
+        AnchorLayout:
+            padding: dp(24), dp(92), dp(24), dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            BiomePanel:
+                width: min(root.width - dp(48), dp(560))
+                BiomePanelTitle:
+                    text: root.page_title
+                    color: 1, 0.72, 0.1, 1
+                BiomeFieldTag:
+                    text: "PLACEHOLDER"
+                    color: 1, 0.72, 0.1, 0.8
+                BiomeBodyLabel:
+                    text: "This page is reserved for developer content.\nA team member will implement this screen."
+                Widget:
+                    size_hint_y: None
+                    height: dp(12)
+                BiomeSecondaryButton:
+                    text: "BACK TO EDITOR HUB"
+                    on_release: root.go_back()
+
+# ===== MAIN MENU — EDITOR BUTTON (DEV MODE ONLY) =====
+# This rule extends MainMenu with an Editor button that is invisible
+# and non-interactive for normal users. Binding both opacity and
+# disabled to is_dev_mode means it truly does not exist for non-devs.
+<MainMenu>:
+    # Editor button floated over the existing panel, bottom-right corner.
+    # It appears only when app.is_dev_mode is True.
+    BoxLayout:
+        size_hint: None, None
+        width: dp(180)
+        height: dp(54)
+        pos_hint: {"right": 0.98, "y": 0.02}
+        opacity: 1 if app.is_dev_mode else 0
+        disabled: not app.is_dev_mode
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 0.48 if app.is_dev_mode else 0
+            Rectangle:
+                pos: self.x + dp(5), self.y - dp(5)
+                size: self.size
+            Color:
+                rgba: (1, 0.72, 0.1, 1) if app.is_dev_mode else (0, 0, 0, 0)
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        canvas.after:
+            Color:
+                rgba: 0.5, 0.35, 0.0, 1 if app.is_dev_mode else 0
+            Line:
+                width: dp(2)
+                rectangle: (self.x, self.y, self.width, self.height)
+        Button:
+            text: "⚙  EDITOR"
+            bold: True
+            font_size: "15sp"
+            background_normal: ""
+            background_down: ""
+            background_color: 0, 0, 0, 0
+            color: 0.1, 0.07, 0.0, 1
+            on_release: root.go_to_editor()
