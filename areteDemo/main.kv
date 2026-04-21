@@ -1328,7 +1328,7 @@
                     size_hint_y: None
                     height: dp(8)
                 BiomePrimaryButton:
-                    text: "EDITOR PAGE 1"
+                    text: "MEMORY QUESTIONS"
                     canvas.before:
                         Color:
                             rgba: 0, 0, 0, 0.58
@@ -1388,6 +1388,163 @@
                     height: dp(4)
                 BiomeSecondaryButton:
                     text: "BACK TO MENU"
+                    on_release: root.go_back()
+
+# ===== MEMORY QUESTION EDITOR (DEV MODE ONLY) =====
+<MemoryQuestionEditor>:
+    canvas.before:
+        Color:
+            rgba: 0.07, 0.07, 0.09, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 0.72, 0.1, 0.05
+        Ellipse:
+            pos: self.center_x - self.width * 0.48, self.center_y - self.width * 0.44
+            size: self.width * 0.96, self.width * 0.96
+    FloatLayout:
+        BoxLayout:
+            size_hint: 1, None
+            height: dp(82)
+            pos_hint: {"top": 1}
+            padding: dp(24), dp(18), dp(24), dp(18)
+            canvas.before:
+                Color:
+                    rgba: 0.10, 0.09, 0.06, 0.96
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            canvas.after:
+                Color:
+                    rgba: 1, 0.72, 0.1, 1
+                Line:
+                    width: dp(2)
+                    rectangle: (self.x, self.y, self.width, self.height)
+            Label:
+                text: "ARETE"
+                font_size: "30sp"
+                bold: True
+                color: 1, 0.72, 0.1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: root.page_title.upper()
+                font_size: "13sp"
+                bold: True
+                color: 0.41, 0.85, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+            Label:
+                text: "⚙  DEV MODE"
+                font_size: "13sp"
+                bold: True
+                color: 1, 0.72, 0.1, 1
+                halign: "right"
+                valign: "middle"
+                text_size: self.size
+        AnchorLayout:
+            padding: dp(24), dp(92), dp(24), dp(24)
+            anchor_x: "center"
+            anchor_y: "center"
+            BiomePanel:
+                width: min(root.width - dp(48), dp(1040))
+                BiomePanelTitle:
+                    text: "Memory Question Editor"
+                    color: 1, 0.72, 0.1, 1
+                BiomeBodyLabel:
+                    text: "Create, update, and remove reflection quiz questions used after gameplay."
+                BiomeBodyLabel:
+                    text: root.status_text
+                    color: 0.41, 0.85, 1, 1
+                ScrollView:
+                    size_hint_y: None
+                    height: min(root.height - dp(290), dp(520))
+                    do_scroll_x: False
+                    bar_width: dp(8)
+                    GridLayout:
+                        cols: 1
+                        size_hint_y: None
+                        height: self.minimum_size[1]
+                        spacing: dp(10)
+
+                        BiomeFieldTag:
+                            text: "EDIT QUESTION BY NUMBER (1-BASED)"
+                        BoxLayout:
+                            size_hint_y: None
+                            height: self.minimum_size[1]
+                            spacing: dp(10)
+                            BiomeTextField:
+                                id: selected_index_input
+                                hint_text: "e.g. 1"
+                                size_hint_x: 0.35
+                            BiomeSecondaryButton:
+                                text: "LOAD SELECTED"
+                                size_hint_x: 0.65
+                                on_release: root.load_selected()
+
+                        BiomeFieldTag:
+                            text: "QUESTION TEXT"
+                        BiomeTextField:
+                            id: question_text
+                            multiline: True
+                            height: dp(96)
+                            hint_text: "What should players remember from gameplay?"
+
+                        BiomeFieldTag:
+                            text: "CHOICE 1"
+                        BiomeTextField:
+                            id: choice_1
+                            hint_text: "Choice 1"
+                        BiomeFieldTag:
+                            text: "CHOICE 2"
+                        BiomeTextField:
+                            id: choice_2
+                            hint_text: "Choice 2"
+                        BiomeFieldTag:
+                            text: "CHOICE 3"
+                        BiomeTextField:
+                            id: choice_3
+                            hint_text: "Choice 3"
+                        BiomeFieldTag:
+                            text: "CHOICE 4"
+                        BiomeTextField:
+                            id: choice_4
+                            hint_text: "Choice 4"
+                        BiomeFieldTag:
+                            text: "CORRECT CHOICE (1-4)"
+                        BiomeTextField:
+                            id: correct_choice_input
+                            hint_text: "Enter 1, 2, 3, or 4"
+
+                        GridLayout:
+                            cols: 2 if self.width > dp(640) else 1
+                            size_hint_y: None
+                            height: self.minimum_size[1]
+                            spacing: dp(10)
+                            BiomePrimaryButton:
+                                text: "SAVE SELECTED QUESTION"
+                                on_release: root.save_selected()
+                            BiomePrimaryButton:
+                                text: "ADD NEW QUESTION"
+                                on_release: root.add_question()
+                            BiomeDangerButton:
+                                text: "REMOVE SELECTED QUESTION"
+                                on_release: root.remove_selected()
+                            BiomeSecondaryButton:
+                                text: "RESET TO DEFAULT QUESTIONS"
+                                on_release: root.reset_defaults()
+
+                        BiomeFieldTag:
+                            text: "CURRENT QUESTION SET"
+                        BiomeDataLabel:
+                            text: root.question_list_text
+                            height: max(dp(220), self.texture_size[1] + dp(10))
+
+                BiomeSecondaryButton:
+                    text: "BACK TO EDITOR HUB"
                     on_release: root.go_back()
 
 # ===== EDITOR PAGE SCREEN (DEV MODE ONLY) =====

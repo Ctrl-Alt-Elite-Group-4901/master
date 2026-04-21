@@ -20,7 +20,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 class Settings(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
-        if not app.user_id:
+        # Allow either a normal authenticated user or developer mode.
+        if not app.user_id and not app.is_dev_mode:
             self.manager.current = "login"
 
     def toggle_theme(self):
@@ -56,6 +57,11 @@ class Settings(Screen):
             self._show_message("Theme changed to light mode.")
 
     def show_change_password_dialog(self):
+        app = App.get_running_app()
+        if app.is_dev_mode:
+            self._show_message("Developer mode has no account password to change.")
+            return
+
         content = themed_frame(spacing=10, padding=16)
         old_pass = themed_input("Old Password", password=True)
         new_pass = themed_input("New Password", password=True)
@@ -94,6 +100,11 @@ class Settings(Screen):
         popup.open()
 
     def show_delete_account_dialog(self):
+        app = App.get_running_app()
+        if app.is_dev_mode:
+            self._show_message("Developer mode is a temporary session and cannot be deleted.")
+            return
+
         content = themed_frame(spacing=10, padding=16)
         content.add_widget(
             themed_label(

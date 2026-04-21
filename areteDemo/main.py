@@ -28,16 +28,7 @@ from areteDemo.screens.help import HelpScreen
 from areteDemo.screens.reflection import ReflectionScreen
 from areteDemo.screens.editor_menu import EditorMenu
 from areteDemo.screens.editor_page import EditorPage
-
-REFLECTION_QUESTIONS = [
-    {"text": "How many clusters of purple seaweed were in the background?", "choices": ["2", "3", "1", "4"], "correct": 3},
-    {"text": "What color was the seashell in the sea background?", "choices": ["Blue", "Red", "Purple", "Green"], "correct": 2},
-    {"text": "How many sea rocks were in the background?", "choices": ["1", "2", "3", "4"], "correct": 1},
-    {"text": "How many red flowers were in the forest background?", "choices": ["2", "3", "1", "4"], "correct": 1},
-    {"text": "What color was the other flower in the forest background?", "choices": ["Blue", "Red", "Purple", "Green"], "correct": 0},
-    {"text": "In the space background how many planets were there?", "choices": ["1", "2", "3", "4"], "correct": 1},
-    {"text": "What color was the spaceship in the space background?", "choices": ["Blue", "Red", "White", "Green"], "correct": 2},
-]
+from areteDemo.screens.memory_question_editor import MemoryQuestionEditor
 
 
 class AreteApp(App):
@@ -90,7 +81,7 @@ class AreteApp(App):
         sm.add_widget(ReflectionScreen(name="reflection"))
         sm.add_widget(EditorMenu(name="editor_menu"))
         # Four placeholder editor pages — team fills each one in later
-        sm.add_widget(EditorPage(name="editor_page_1", page_title="Editor Page 1"))
+        sm.add_widget(MemoryQuestionEditor(name="editor_page_1"))
         sm.add_widget(EditorPage(name="editor_page_2", page_title="Editor Page 2"))
         sm.add_widget(EditorPage(name="editor_page_3", page_title="Editor Page 3"))
         sm.add_widget(EditorPage(name="editor_page_4", page_title="Editor Page 4"))
