@@ -58,6 +58,7 @@ class AreteApp(App):
     )
 
     player_color = ListProperty([1, 1, 1, 1])
+    player_sprite_name = StringProperty("blue")
 
     @staticmethod
     def _lock_fullscreen():

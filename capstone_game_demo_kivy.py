@@ -43,8 +43,9 @@ GAME_DURATION = 300  # 5 minute game duration
 #SPAWN_PAUSE_ON_BG_SWITCH = 2.0  # pause obstacle spawning after background switches (sec)
 OBSTACLE_PREVIEW_SECONDS = 5.5  # spawn NEXT theme obstacles this many seconds before bg switch
 
-def _resource_path(relative_path): # helper to find resource path that works both in dev and when packaged with PyInstaller
-    
+
+def _resource_path(relative_path):
+    # helper to find resource path that works both in dev and when packaged with PyInstaller
     candidates = []
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
         candidates.append(sys._MEIPASS)
@@ -65,6 +66,7 @@ def lock_window_fullscreen():
     Window.fullscreen = "auto"
     Window.borderless = True
 
+
 class Obstacle:
     def __init__(self, x, y, size, source):
         self.x = x
@@ -73,23 +75,24 @@ class Obstacle:
         self.source = source
         self.passed = False
 
+
 class GameWidget(Widget):
     speed = NumericProperty(INITIAL_SPEED)  # current world speed (px/s)
     base_speed = NumericProperty(INITIAL_SPEED)  # base target speed
-    
+
     player_y = NumericProperty(0.0)  # center y of player
     player_vy = NumericProperty(0.0)
-    player_x = NumericProperty(400.0)  # horizontal position of player (constant)  # change this number only
+    player_x = NumericProperty(400.0)  # horizontal position of player (constant)
     player_radius = NumericProperty(PLAYER_RADIUS)
-    
+
     is_running = BooleanProperty(False)
     is_counting_down = BooleanProperty(False)
     countdown_value = NumericProperty(0)
-    
+
     obstacles = ListProperty([])
     score_distance = NumericProperty(0.0)
     avoided_count = NumericProperty(0)
-    
+
     game_over = BooleanProperty(False)
     on_game_over_callback = ObjectProperty(None, allownone=True)
 
@@ -104,9 +107,22 @@ class GameWidget(Widget):
         self.player_x = self.viewport_width * PLAYER_X_RATIO
         self.player_y = self.floor_height + PLAYER_RADIUS
         self._last_floor_height = self.floor_height
-        
-        # Player color property (Merged from our work)
+
         self.player_color = [1, 1, 1, 1]
+
+        self.player_sprite_sources = {
+            "blue": _resource_path(os.path.join("images", "player_blue.png")),
+            "green": _resource_path(os.path.join("images", "player_green.png")),
+            "orange": _resource_path(os.path.join("images", "player_orange.png")),
+            "red": _resource_path(os.path.join("images", "player_red.png")),
+        }
+        self.player_sprite = self.player_sprite_sources["blue"]
+
+        self.is_flickering = False
+        self.flicker_timer = 0.0
+        self.flicker_interval = 0.1
+        self.flicker_duration = 1.5
+        self.player_visible = True
 
         self._spawn_accumulator = 0.0
         self._time = time.time()
@@ -140,7 +156,7 @@ class GameWidget(Widget):
         self._bg_elapsed = 0.0
         self.BG_SWITCH_SECONDS = 20.0
 
-        # UI labels (bold colors so they show on sea background)
+        # UI labels
         self.label_countdown = Label(
             text="", font_size=56, color=(0, 0, 0, 1), bold=True
         )
@@ -157,22 +173,8 @@ class GameWidget(Widget):
         self.add_widget(self.msg)
         self._layout_overlay()
 
-        # schedule update
-        Clock.schedule_interval(self.update, 1.0/60.0)
-        # Game graphics drawn to canvas.before so Labels (children) render on top
-
-        # Window resize handler to adjust player and UI positions (not fully implemented)
-        #def _on_resize(self, *_):
-        #    self.player_x = self.width * 0.15
-        #    self.player_y = self.floor_height + PLAYER_RADIUS
-        #
-        #    self.label_countdown.center = self.center
-        #    self.msg.center = (self.width / 2, self.height * 0.6)
-        #    self.hud.pos = (10, self.height - 36)
-        #
-        #@property
-        #def floor_height(self):
-        #    return self.height * BASE_FLOOR_RATIO
+        Clock.schedule_interval(self.update, 1.0 / 60.0)
+        Clock.schedule_once(lambda dt: self.sync_player_sprite_from_app_color(), 0)
 
     @property
     def viewport_width(self):
@@ -223,14 +225,40 @@ class GameWidget(Widget):
         Window.unbind(on_resize=self._on_resize)
         Clock.unschedule(self.update)
 
-    # Helper method to set color (Merged from our work)
     def set_player_color(self, r, g, b, a=1):
         self.player_color = [r, g, b, a]
+
     
+    def set_player_sprite(self, sprite_name):
+        if sprite_name in self.player_sprite_sources:
+            self.player_sprite = self.player_sprite_sources[sprite_name]
+
+    # Check app.player_color and sync the sprite accordingly
+    def _colors_match(self, a, b, tol=0.02):
+        if len(a) != len(b):
+            return False
+        return all(abs(float(x) - float(y)) <= tol for x, y in zip(a, b))
+
+    def sync_player_sprite_from_app_color(self):
+        app = App.get_running_app()
+        app_color = list(getattr(app, "player_color", [1, 1, 1, 1]))
+
+        color_to_sprite = {
+            "blue": [0.3, 0.5, 1, 1],
+            "green": [0.3, 1, 0.3, 1],
+            "orange": [1.0, 0.6, 0.2, 1],
+            "red": [1, 0.3, 0.3, 1],
+        }
+
+        for sprite_name, rgba in color_to_sprite.items():
+            if self._colors_match(app_color, rgba):
+                self.set_player_sprite(sprite_name)
+                self.player_color = app_color
+                return
+
     def _on_key_down(self, window, key, scancode, codepoint, modifiers):
         if not self.is_active:
             return
-        # SPACE = 32, Enter/Return = 13 (both start countdown and restart; only SPACE jumps)
         if key not in (32, 13):
             return
         if not self.is_running and not self.is_counting_down and not self.game_over:
@@ -246,7 +274,7 @@ class GameWidget(Widget):
         self.countdown_value = seconds
         self.is_counting_down = True
         self.label_countdown.text = str(int(self.countdown_value))
-        Clock.schedule_interval(self._countdown_tick, 1.0)  # tick each second
+        Clock.schedule_interval(self._countdown_tick, 1.0)
 
     def _countdown_tick(self, dt):
         self.countdown_value -= 1
@@ -258,30 +286,29 @@ class GameWidget(Widget):
             self.is_counting_down = False
             self.is_running = True
             self._time = time.time()
-            return False  # unschedule
+            return False
 
     def reset_game(self):
-        # reset all state
         self.speed = INITIAL_SPEED
         self.base_speed = INITIAL_SPEED
         self.player_x = self.viewport_width * PLAYER_X_RATIO
         self.player_y = self.floor_height + PLAYER_RADIUS
         self.player_vy = 0.0
-        
+
         self.obstacles = []
         self._spawn_accumulator = 0.0
-        
+
         self.score_distance = 0.0
         self.avoided_count = 0
         self.is_running = False
         self.is_counting_down = False
         self.game_over = False
-        
+
         self.msg.text = "Press SPACE or ENTER to start"
         self.label_countdown.text = ""
         self.hud.text = ""
         self._slow_start_speed = None
-        
+
         self._last_speed_milestone = 0
         self.bg_index = 0
         self.bg_source = self.backgrounds[self.bg_index]
@@ -289,38 +316,44 @@ class GameWidget(Widget):
         self._slow_until = None
         self._spawn_pause_remaining = 0.0
         self._last_floor_height = self.floor_height
+
+        
+        self.is_flickering = False
+        self.flicker_timer = 0.0
+        self.player_visible = True
+
+        self.sync_player_sprite_from_app_color()
         self._layout_overlay()
 
     def on_ground(self):
-        # player's center y equals ground + radius
         return abs(self.player_y - (self.floor_height + PLAYER_RADIUS)) < 1.0 and self.player_vy <= 0.0
 
     def spawn_obstacle(self):
-        # spawn a square obstacle at right side
         size = 70
         x = self.viewport_width + random.randint(0, 120)
         y = self.floor_height
 
-        # If we are within N seconds of a background switch,
-        # spawn obstacles using the NEXT background's obstacle theme
         time_to_switch = self.BG_SWITCH_SECONDS - self._bg_elapsed
         if time_to_switch <= OBSTACLE_PREVIEW_SECONDS:
             preview_index = (self.bg_index + 1) % len(self.backgrounds)
         else:
             preview_index = self.bg_index
 
-        src = self.obstacle_sources.get(preview_index, _resource_path(os.path.join("images", "obstacle_default.png")))
+        src = self.obstacle_sources.get(
+            preview_index,
+            _resource_path(os.path.join("images", "obstacle_default.png"))
+        )
         self.obstacles.append(Obstacle(x, y, size, src))
 
     def update(self, dt):
-        # dt safety
         if dt <= 0:
             return
 
-        # draw fresh to canvas.before so Labels stay visible on top
+        # Continuously sync the sprite with the current app.player_color
+        self.sync_player_sprite_from_app_color()
+
         self.canvas.before.clear()
         with self.canvas.before:
-            # draw background
             Color(1, 1, 1, 1)
             Rectangle(
                 pos=(0, 0),
@@ -328,36 +361,26 @@ class GameWidget(Widget):
                 source=self.bg_source
             )
 
-        # update only if running (but still draw static HUD)
         if self.is_running and not self.game_over:
-            # game end condition
             elapsed_time = time.time() - self._time
             if elapsed_time >= GAME_DURATION:
                 self.end_game()
-                return           
+                return
 
-            # background change every 10 seconds
             self._bg_elapsed += dt
             if self._bg_elapsed >= self.BG_SWITCH_SECONDS:
                 self._bg_elapsed = 0.0
                 self.bg_index = (self.bg_index + 1) % len(self.backgrounds)
                 self.bg_source = self.backgrounds[self.bg_index]
-                # self._spawn_pause_remaining = SPAWN_PAUSE_ON_BG_SWITCH
-                # self._spawn_accumulator = 0.0
 
-            # game end condition
             elapsed_time = time.time() - self._time
             if elapsed_time >= GAME_DURATION:
                 self.end_game()
                 return
-            
-            # move obstacles left by speed*dt
+
             for ob in list(self.obstacles):
                 ob.x -= self.speed * dt
 
-            # spawn logic: spawn when last obstacle sufficiently left
-            # simpler: use accumulator and a spawn interval scaled by speed
-            # faster speed = shorter intervals
             if self._spawn_pause_remaining > 0.0:
                 self._spawn_pause_remaining -= dt
             else:
@@ -367,55 +390,61 @@ class GameWidget(Widget):
                     self._spawn_accumulator = 0.0
                     self.spawn_obstacle()
 
-            # physics: player vertical
             self.player_vy += GRAVITY * dt
             self.player_y += self.player_vy * dt
-            # collision with ground
+
             if self.player_y < self.floor_height + PLAYER_RADIUS:
                 self.player_y = self.floor_height + PLAYER_RADIUS
                 self.player_vy = 0.0
 
-            # speed increase logic: every 5 avoided, increase base speed by fixed amount
             if self.avoided_count > 0 and (self.avoided_count % 5 == 0):
                 self.base_speed = self.base_speed + SPEED_INCREASE_PER_5_AVOIDED
 
-            # distance traveled (approx): speed * elapsed_time increments distance
             self.score_distance += self.speed * dt
 
-            # collision detection: circle vs squares
+            # Update the flicker effect after a collision
+            if self.is_flickering:
+                self.flicker_timer -= dt
+                if self.flicker_timer <= 0:
+                    self.is_flickering = False
+                    self.player_visible = True
+                else:
+                    blink_phase = int(self.flicker_timer / self.flicker_interval) % 2
+                    self.player_visible = (blink_phase == 0)
+
             for ob in list(self.obstacles):
-                # obstacle bounding box
                 ob_left = ob.x
                 ob_right = ob.x + ob.size
                 ob_bottom = ob.y
                 ob_top = ob.y + ob.size
 
-                # circle center
                 cx = self.player_x
                 cy = self.player_y
 
-                # AABB-circle collision test
                 nearest_x = max(ob_left, min(cx, ob_right))
                 nearest_y = max(ob_bottom, min(cy, ob_top))
                 dx = cx - nearest_x
                 dy = cy - nearest_y
-                if (dx*dx + dy*dy) <= (self.player_radius * self.player_radius):
-                    # collision!
+
+                if (dx * dx + dy * dy) <= (self.player_radius * self.player_radius):
                     try:
                         self.obstacles.remove(ob)
                     except ValueError:
                         pass
-                    # slow effect
+
+                    # Trigger the flicker effect when a collision happens
+                    self.is_flickering = True
+                    self.flicker_timer = self.flicker_duration
+                    self.player_visible = False
+
                     self._slow_start_speed = self.speed
-                    self.base_speed = self.base_speed  # base remains but we'll interpolate from _slow_start_speed up to base
-                    # immediately set current speed lower to show impact
+                    self.base_speed = self.base_speed
                     self.speed = self._slow_start_speed * SLOW_ON_HIT_MULTIPLIER
                     self._slow_start_speed = self.speed
-                    if self.speed < 200:  # don't let it get too slow
+                    if self.speed < 200:
                         self.speed = 200
-                    break  # only one hit per frame
+                    break
 
-            # obstacles that passed left edge without collision -> avoided
             for ob in list(self.obstacles):
                 if not ob.passed and (ob.x + ob.size) < 0:
                     ob.passed = True
@@ -425,41 +454,20 @@ class GameWidget(Widget):
                     except ValueError:
                         pass
 
-        # draw dynamic objects regardless of running (so countdown/score display)
         with self.canvas.before:
-            # draw obstacles
             for ob in self.obstacles:
                 Color(1, 1, 1, 1)
                 Rectangle(pos=(ob.x, ob.y), size=(ob.size, ob.size), source=ob.source)
 
-            # draw player (rolling circle)
-            # we draw rotation to visually roll the circle depending on speed
-            push = PushMatrix()
-            r = Rotate()
-            # rotation angle derived from speed and time (simulate rolling)
-            # radius = player_radius, angular velocity = speed / radius (rad/s), convert to degrees
-            ang_speed = (self.speed / (self.player_radius)) * (180.0 / 3.14159265)  # degrees per second
-            # accumulate angle in a simple way using time:
-            if not hasattr(self, "_roll_angle"):
-                self._roll_angle = 0.0
-            self._roll_angle += ang_speed * (Clock.get_time() - getattr(self, "_last_clock_time", Clock.get_time()))
-            self._last_clock_time = Clock.get_time()
-            r.angle = self._roll_angle
-            r.origin = (self.player_x, self.player_y)
-            
-            # Apply dynamic player color (Merged from our work)
-            Color(*self.player_color)
-            
-            Ellipse(pos=(self.player_x - self.player_radius, self.player_y - self.player_radius),
-                    size=(self.player_radius*2, self.player_radius*2))
-            PopMatrix()
+            # Draw the player character sprite
+            if self.player_visible:
+                Color(1, 1, 1, 1)
+                Rectangle(
+                    pos=(self.player_x - self.player_radius, self.player_y - self.player_radius),
+                    size=(self.player_radius * 2, self.player_radius * 2),
+                    source=self.player_sprite
+                )
 
-            # player inner eye or dot
-            Color(0.96, 0.96, 0.96)
-            small = self.player_radius * 0.5
-            Ellipse(pos=(self.player_x - small/2, self.player_y - small/2), size=(small, small))
-
-        # draw HUD text (keep showing during game over so final stats are visible)
         if not self.game_over:
             self.hud.text = f"Distance: {int(self.score_distance)}    Avoided: {self.avoided_count}"
         else:
@@ -474,11 +482,13 @@ class GameWidget(Widget):
         if self.on_game_over_callback:
             self.on_game_over_callback()
 
+
 class CapstoneGameDemoApp(App):
     def build(self):
         lock_window_fullscreen()
         root = GameWidget()
         return root
+
 
 if __name__ == '__main__':
     CapstoneGameDemoApp().run()
