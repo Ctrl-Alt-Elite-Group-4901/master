@@ -1,0 +1,6 @@
+{
+  "api_base_url": "https://your-worker-subdomain.workers.dev",
+  "client_key": "replace-with-worker-client-key",
+  "require_cloud": true,
+  "timeout_seconds": 12
+}

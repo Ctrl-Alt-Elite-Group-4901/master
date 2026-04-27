@@ -1,11 +1,13 @@
 import copy
 import json
 import os
+import sys
 from typing import Any
 
 
 BASE_DIR = os.path.dirname(__file__)
-QUESTIONS_PATH = os.path.join(BASE_DIR, "reflection_questions.json")
+SOURCE_QUESTIONS_PATH = os.path.join(BASE_DIR, "reflection_questions.json")
+RUNTIME_QUESTIONS_FILENAME = "reflection_questions.local.json"
 
 DEFAULT_REFLECTION_QUESTIONS = [
     {
@@ -46,6 +48,20 @@ DEFAULT_REFLECTION_QUESTIONS = [
 ]
 
 
+def _runtime_questions_path() -> str:
+    if getattr(sys, "frozen", False):
+        base_dir = os.path.dirname(sys.executable)
+    else:
+        base_dir = BASE_DIR
+    return os.path.join(base_dir, RUNTIME_QUESTIONS_FILENAME)
+
+
+def _read_questions_file(path: str) -> list[dict[str, Any]]:
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return _normalize_questions(data)
+
+
 def _normalize_question(raw: Any) -> dict[str, Any]:
     if not isinstance(raw, dict):
         raise ValueError("Each question must be an object.")
@@ -82,22 +98,21 @@ def _normalize_questions(raw: Any) -> list[dict[str, Any]]:
 
 
 def get_questions() -> list[dict[str, Any]]:
-    if not os.path.exists(QUESTIONS_PATH):
-        defaults = copy.deepcopy(DEFAULT_REFLECTION_QUESTIONS)
-        try:
-            save_questions(defaults)
-        except Exception:
-            return defaults
-        return defaults
+    runtime_path = _runtime_questions_path()
+    if os.path.exists(runtime_path):
+        return _read_questions_file(runtime_path)
 
-    with open(QUESTIONS_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return _normalize_questions(data)
+    if not getattr(sys, "frozen", False) and os.path.exists(SOURCE_QUESTIONS_PATH):
+        return _read_questions_file(SOURCE_QUESTIONS_PATH)
+
+    return _normalize_questions(copy.deepcopy(DEFAULT_REFLECTION_QUESTIONS))
 
 
 def save_questions(questions: list[dict[str, Any]]) -> list[dict[str, Any]]:
     normalized = _normalize_questions(questions)
-    with open(QUESTIONS_PATH, "w", encoding="utf-8") as f:
+    runtime_path = _runtime_questions_path()
+    os.makedirs(os.path.dirname(runtime_path), exist_ok=True)
+    with open(runtime_path, "w", encoding="utf-8") as f:
         json.dump(normalized, f, indent=2, ensure_ascii=True)
     return normalized
 

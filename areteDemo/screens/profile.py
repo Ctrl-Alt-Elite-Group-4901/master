@@ -53,6 +53,8 @@ class Profile(Screen):
                 self._show_message("Profile updated successfully!")
             else:
                 self._show_message("Failed to update profile.")
+        except ValueError as exc:
+            self._show_message(str(exc))
         except sqlite3.IntegrityError:
             self._show_message("Email already in use.")
 

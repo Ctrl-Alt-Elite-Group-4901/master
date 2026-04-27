@@ -12,8 +12,12 @@ Config.set("graphics", "resizable", "0")
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, FadeTransition
-from kivy.properties import ListProperty, NumericProperty, StringProperty, BooleanProperty
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.button import Button
+from kivy.properties import ListProperty, NumericProperty, StringProperty, BooleanProperty, ObjectProperty
 from kivy.core.window import Window
+from kivy.metrics import dp
+from areteDemo.screens.ui_helpers import show_message_popup
 
 BASE_DIR = os.path.dirname(__file__)
 KV_DIR = BASE_DIR
@@ -29,6 +33,8 @@ from areteDemo.screens.reflection import ReflectionScreen
 from areteDemo.screens.editor_menu import EditorMenu
 from areteDemo.screens.editor_page import EditorPage
 from areteDemo.screens.memory_question_editor import MemoryQuestionEditor
+from areteDemo.screens.player_directory import PlayerDirectory
+from areteDemo.screens.player_runs import PlayerRuns
 
 
 class AreteApp(App):
@@ -37,6 +43,7 @@ class AreteApp(App):
 
     # Developer mode flag — set True when dev credentials are used at login
     is_dev_mode = BooleanProperty(False)
+    pending_run_data = ObjectProperty(None, allownone=True)
 
     # Theme properties
     theme_header = ListProperty([0.12, 0.45, 0.88, 1])
@@ -71,6 +78,7 @@ class AreteApp(App):
         if os.path.exists(main_kv):
             Builder.load_file(main_kv)
 
+        root = FloatLayout()
         sm = ScreenManager(transition=FadeTransition())
         sm.add_widget(Login(name="login"))
         sm.add_widget(Register(name="register"))
@@ -81,12 +89,39 @@ class AreteApp(App):
         sm.add_widget(HelpScreen(name="help"))
         sm.add_widget(ReflectionScreen(name="reflection"))
         sm.add_widget(EditorMenu(name="editor_menu"))
-        # Four placeholder editor pages — team fills each one in later
         sm.add_widget(MemoryQuestionEditor(name="editor_page_1"))
         sm.add_widget(EditorPage(name="editor_page_2", page_title="Editor Page 2"))
         sm.add_widget(EditorPage(name="editor_page_3", page_title="Editor Page 3"))
         sm.add_widget(EditorPage(name="editor_page_4", page_title="Editor Page 4"))
-        return sm
+        sm.add_widget(PlayerDirectory(name="player_directory"))
+        sm.add_widget(PlayerRuns(name="player_runs"))
+        root.add_widget(sm)
+
+        exit_button = Button(
+            text="X",
+            size_hint=(None, None),
+            size=(dp(34), dp(34)),
+            pos_hint={"right": 0.995, "top": 0.995},
+            background_normal="",
+            background_down="",
+            background_color=(0.72, 0.12, 0.12, 0.92),
+            color=(1, 1, 1, 1),
+            bold=True,
+            font_size="15sp",
+        )
+        exit_button.bind(on_release=self.request_exit)
+        root.add_widget(exit_button)
+        return root
+
+    def request_exit(self, *_args):
+        if self.pending_run_data:
+            show_message_popup(
+                "Run Save Notice",
+                "A completed run has not finished saving yet. Finish the memory quiz save before exiting.",
+                size_hint=(0.82, 0.42),
+            )
+            return
+        self.stop()
 
     def on_start(self):
         self._lock_fullscreen()

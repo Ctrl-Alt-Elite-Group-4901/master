@@ -1,7 +1,11 @@
-# areteDemo/screens/game.py
+import logging
+
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from capstone_game_demo_kivy import GameWidget
+
+
+logger = logging.getLogger(__name__)
 
 
 class GameScreen(Screen):
@@ -43,11 +47,14 @@ class GameScreen(Screen):
         gw = self._game_widget
         if gw and app.user_id:
             final_score = int(gw.score_distance) + gw.avoided_count * 100
+            run_summary = gw.build_run_summary()
+            run_summary["score"] = final_score
+            app.pending_run_data = run_summary
             try:
                 import areteDemo.auth as auth
                 auth.add_score(app.user_id, final_score)
-            except Exception as e:
-                print(f"Score save error: {e}")
+            except Exception:
+                logger.exception("Score save failed for user_id=%s", app.user_id)
 
         sm = self.manager
         refl = sm.get_screen("reflection")

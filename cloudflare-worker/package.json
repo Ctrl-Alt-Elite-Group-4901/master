@@ -1,0 +1,16 @@
+{
+  "name": "arete-cloudflare-worker",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "d1:migrate": "wrangler d1 migrations apply arete-telemetry --remote",
+    "dev": "wrangler dev",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260424.1",
+    "typescript": "5.9.3",
+    "wrangler": "4.85.0"
+  }
+}

@@ -22,6 +22,7 @@ def get_db_path():
 def get_connection() -> Connection:
     path = get_db_path()
     conn = sqlite3.connect(path, check_same_thread=False)
+    conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -60,6 +61,62 @@ def init_db():
         """
         CREATE INDEX IF NOT EXISTS idx_scores_user_id
         ON scores(user_id, score DESC)
+        """
+    )
+
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS run_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            started_at TEXT NOT NULL,
+            ended_at TEXT NOT NULL,
+            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            score INTEGER NOT NULL DEFAULT 0,
+            objects_hit_total INTEGER NOT NULL DEFAULT 0,
+            hit_object_ids TEXT NOT NULL DEFAULT '',
+            quiz_total_questions INTEGER NOT NULL DEFAULT 0,
+            quiz_correct_count INTEGER NOT NULL DEFAULT 0,
+            quiz_incorrect_count INTEGER NOT NULL DEFAULT 0,
+            quiz_answers_detail TEXT NOT NULL DEFAULT '[]',
+            player_size_px2 REAL NOT NULL DEFAULT 0,
+            obstacle_size_px2 REAL NOT NULL DEFAULT 0,
+            speed_start_pxps REAL NOT NULL DEFAULT 0,
+            speed_avg_pxps REAL NOT NULL DEFAULT 0,
+            speed_max_pxps REAL NOT NULL DEFAULT 0,
+            speed_end_pxps REAL NOT NULL DEFAULT 0,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+        """
+    )
+
+    cur.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_run_sessions_user_ended
+        ON run_sessions(user_id, ended_at DESC)
+        """
+    )
+
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS pending_run_uploads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            run_payload TEXT NOT NULL,
+            quiz_payload TEXT NOT NULL,
+            last_error TEXT NOT NULL DEFAULT '',
+            retry_count INTEGER NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+        """
+    )
+
+    cur.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_pending_run_uploads_user_created
+        ON pending_run_uploads(user_id, created_at ASC)
         """
     )
 

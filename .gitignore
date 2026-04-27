@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# PyInstaller build output
+areteDemo/build/
+areteDemo/dist/
+Arete.exe
+
+# Local SQLite databases (generated at runtime)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Cloud config - may contain secrets, never commit
+areteDemo/cloud_config.json
+reflection_questions.local.json
+
+# Exported CSVs
+areteDemo/exports/
+
+# Cloudflare Worker
+cloudflare-worker/node_modules/
+cloudflare-worker/.wrangler/
+cloudflare-worker/.dev.vars
+
+# Local Kivy/runtime state
+.kivy/
+
+# Accidental root npm lockfile; Worker lockfile lives in cloudflare-worker/
+/package-lock.json
+
+# Old typo ignore file; root .gitignore is authoritative
+areteDemo/.gititgnore
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

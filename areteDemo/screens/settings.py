@@ -83,7 +83,11 @@ class Settings(Screen):
                 self._show_message("Password must be at least 4 characters.")
                 return
             app = App.get_running_app()
-            success = auth.change_password(app.user_id, old_pass.text, new_pass.text)
+            try:
+                success = auth.change_password(app.user_id, old_pass.text, new_pass.text)
+            except ValueError as exc:
+                self._show_message(str(exc))
+                return
             if success:
                 popup.dismiss()
                 self._show_message("Password changed successfully!")

@@ -13,5 +13,8 @@ class EditorMenu(Screen):
     def go_to_page(self, page_number: int):
         self.manager.current = f"editor_page_{page_number}"
 
+    def go_to_player_directory(self):
+        self.manager.current = "player_directory"
+
     def go_back(self):
         self.manager.current = "main_menu"

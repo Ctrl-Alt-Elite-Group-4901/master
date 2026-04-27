@@ -6,10 +6,7 @@ from kivy.properties import StringProperty
 
 class EditorPage(Screen):
     """
-    Reusable placeholder for all four editor sub-pages.
-    Set page_title at registration time in main.py.
-    Team members replace the body of on_pre_enter / add widgets here
-    when they are ready to implement their page.
+    Restricted editor screen shell kept for future sponsor-specific tools.
     """
     page_title = StringProperty("")
 

@@ -24,4 +24,5 @@ class MainMenu(Screen):
         app = App.get_running_app()
         app.user_id = None
         app.is_dev_mode = False
+        app.pending_run_data = None
         self.manager.current = "login"

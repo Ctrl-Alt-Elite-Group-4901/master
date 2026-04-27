@@ -1,0 +1,23 @@
+name = "arete-telemetry-api"
+main = "src/index.ts"
+compatibility_date = "2026-04-24"
+
+[observability]
+enabled = true
+
+[vars]
+# Do not store ADMIN_TOKEN or CLIENT_KEY here.
+# Set both with `npx wrangler secret put ...` for production.
+
+[[ratelimits]]
+name = "RUNS_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 30
+  period = 60
+
+[[d1_databases]]
+binding = "DB"
+database_name = "arete-telemetry"
+database_id = "440b01aa-a260-4d0e-8d00-e00ff3d81cc1"

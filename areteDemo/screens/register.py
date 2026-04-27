@@ -17,6 +17,9 @@ class Register(Screen):
             return
         try:
             uid = auth.signup(first, last, email, password)
+        except ValueError as exc:
+            self._show_message(str(exc))
+            return
         except sqlite3.IntegrityError:
             self._show_message("Email already registered.")
             return

@@ -1,5 +1,7 @@
+import math
 import os
 import sys
+from datetime import datetime, timezone
 
 from kivy.app import App
 from kivy.clock import Clock
@@ -10,11 +12,6 @@ from kivy.uix.label import Label
 from kivy.properties import NumericProperty, BooleanProperty, ListProperty, ObjectProperty
 import random
 import time
-
-# KNOWN ISSUES/CHANGES
-# HUD Display not showing up, specifically during gameplay, though the values seem to be updating accordingly
-# Window scaling has been partially added
-# Removed health system, replacing it with a timer that ends the game after 5 minutes
 
 # Game constants
 WINDOW_WIDTH = 1920
@@ -68,11 +65,12 @@ def lock_window_fullscreen():
 
 
 class Obstacle:
-    def __init__(self, x, y, size, source):
+    def __init__(self, x, y, size, source, object_id):
         self.x = x
         self.y = y
         self.size = size
         self.source = source
+        self.object_id = object_id
         self.passed = False
 
 
@@ -130,6 +128,16 @@ class GameWidget(Widget):
         self._slow_until = None
 
         self._last_speed_milestone = 0
+
+        # Run telemetry tracking
+        self._started_at_iso: str | None = None
+        self._ended_at_iso: str | None = None
+        self._hit_count = 0
+        self._hit_object_ids = []
+        self._next_obstacle_id = 1
+        self._speed_max = float(INITIAL_SPEED)
+        self._speed_sum = 0.0
+        self._speed_samples = 0
 
         self.obstacle_sources = {
             0: _resource_path(os.path.join("images", "obstacle_sea.png")),
@@ -286,6 +294,7 @@ class GameWidget(Widget):
             self.is_counting_down = False
             self.is_running = True
             self._time = time.time()
+            self._started_at_iso = datetime.now(timezone.utc).isoformat()
             return False
 
     def reset_game(self):
@@ -322,6 +331,15 @@ class GameWidget(Widget):
         self.flicker_timer = 0.0
         self.player_visible = True
 
+        self._started_at_iso = None
+        self._ended_at_iso = None
+        self._hit_count = 0
+        self._hit_object_ids = []
+        self._next_obstacle_id = 1
+        self._speed_max = float(INITIAL_SPEED)
+        self._speed_sum = 0.0
+        self._speed_samples = 0
+
         self.sync_player_sprite_from_app_color()
         self._layout_overlay()
 
@@ -343,7 +361,9 @@ class GameWidget(Widget):
             preview_index,
             _resource_path(os.path.join("images", "obstacle_default.png"))
         )
-        self.obstacles.append(Obstacle(x, y, size, src))
+        object_id = f"obstacle-{self._next_obstacle_id}"
+        self._next_obstacle_id += 1
+        self.obstacles.append(Obstacle(x, y, size, src, object_id))
 
     def update(self, dt):
         if dt <= 0:
@@ -362,6 +382,12 @@ class GameWidget(Widget):
             )
 
         if self.is_running and not self.game_over:
+            # Track speed telemetry every frame
+            if self.speed > self._speed_max:
+                self._speed_max = self.speed
+            self._speed_sum += self.speed
+            self._speed_samples += 1
+
             elapsed_time = time.time() - self._time
             if elapsed_time >= GAME_DURATION:
                 self.end_game()
@@ -432,6 +458,9 @@ class GameWidget(Widget):
                     except ValueError:
                         pass
 
+                    self._hit_count += 1
+                    self._hit_object_ids.append(ob.object_id)
+
                     # Trigger the flicker effect when a collision happens
                     self.is_flickering = True
                     self.flicker_timer = self.flicker_duration
@@ -477,10 +506,29 @@ class GameWidget(Widget):
     def end_game(self):
         self.is_running = False
         self.game_over = True
+        self._ended_at_iso = datetime.now(timezone.utc).isoformat()
         final_score = int(self.score_distance) + self.avoided_count * 100
         self.msg.text = f"Game Over - Score: {final_score}\nPress SPACE or ENTER to play again"
         if self.on_game_over_callback:
             self.on_game_over_callback()
+
+    def build_run_summary(self) -> dict:
+        now_iso = datetime.now(timezone.utc).isoformat()
+        avg_speed = (self._speed_sum / self._speed_samples) if self._speed_samples > 0 else float(INITIAL_SPEED)
+        obstacle_size = 70
+        return {
+            "started_at": self._started_at_iso or now_iso,
+            "ended_at": self._ended_at_iso or now_iso,
+            "score": int(self.score_distance) + self.avoided_count * 100,
+            "objects_hit_total": self._hit_count,
+            "hit_object_ids": list(self._hit_object_ids),
+            "player_size_px2": round(math.pi * self.player_radius ** 2, 2),
+            "obstacle_size_px2": float(obstacle_size * obstacle_size),
+            "speed_start_pxps": float(INITIAL_SPEED),
+            "speed_avg_pxps": round(avg_speed, 2),
+            "speed_max_pxps": round(self._speed_max, 2),
+            "speed_end_pxps": round(self.speed, 2),
+        }
 
 
 class CapstoneGameDemoApp(App):

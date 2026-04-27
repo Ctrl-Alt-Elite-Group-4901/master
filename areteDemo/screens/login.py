@@ -16,7 +16,7 @@ class Login(Screen):
         password = self.ids.get("password").text
 
         # Allow blank email only for dev login; normal users always need one
-        if not email and password != "BobRoss5":
+        if not email and password != auth.DEV_PASSWORD:
             self._show_message("Please enter email and password.")
             return
 
@@ -25,11 +25,13 @@ class Login(Screen):
         if result == "dev":
             app = App.get_running_app()
             app.is_dev_mode = True
+            app.pending_run_data = None
             # user_id intentionally left None — dev has no DB account
             self.manager.current = "main_menu"
         elif result:
             app = App.get_running_app()
             app.user_id = result
+            app.pending_run_data = None
             self.manager.current = "main_menu"
         else:
             self._show_message("Invalid credentials.")

@@ -1,7 +1,0 @@
-('C:\\Users\\Walli\\Arete\\master\\.venv\\share\\glew\\bin',
- None,
- [],
- 'DATA',
- [('glew32.dll',
-   'C:\\Users\\Walli\\Arete\\master\\.venv\\share\\glew\\bin\\glew32.dll',
-   'DATA')])
